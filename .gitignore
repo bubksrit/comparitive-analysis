@@ -1,0 +1,41 @@
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+coverage.xml
+.coverage
+htmlcov/
+
+# Frontend
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+
+# Local configuration and environments
+.env
+.env.*
+!.env.example
+backend/config/*.local.json
+.DS_Store
+Thumbs.db
+
+# CIC-IDS2017 and generated research artifacts
+data/raw/
+data/processed/
+datasets/
+outputs/
+artifacts/
+*.parquet
+*.feather
+*.pkl
+*.joblib
+*.npy
+*.npz
