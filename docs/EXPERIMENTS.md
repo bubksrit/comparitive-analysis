@@ -63,65 +63,120 @@ Record optimizer/search wall time separately from RF fit/evaluation time and pre
 
 ## 3. Study B — simulated load balancing
 
+### 3.0 Scope and methodology change record
+
+The initial Study B implementation compares exactly three traditional policies: Round Robin, Least Connections, and capacity-aware Weighted Load Balancing. Random Forest is a later extension and is excluded until its separate simulation model, training target, and evaluation protocol are approved. GA, BPSO, and ACO remain feature-selection methods in Study A; they are not routing policies in this initial Study B scope. Adding any further routing policy requires an explicit scope and protocol revision.
+
+**Explicit methodology change (approved 2026-11-27):** an earlier draft defined Weighted as random selection proportional to configured routing weights. That method is superseded for the initial Study B comparison by capacity-aware workload balancing, matching the project owner's approved prototype definition. This is a methodological change, not a wording-only edit. The initial policy selects the eligible server with the smallest estimated outstanding work divided by its effective processing capacity. The prior weighted-random policy is not part of the initial experiment. It may only be reintroduced later as a separately named baseline after protocol review. The existing `routing_weight` field is not used by the initial capacity-aware policy and should be deprecated or reserved rather than silently affecting results.
+
 ### 3.1 Simulator model and units
 
-Use a discrete-event simulator with explicit request arrival, queueing, service start/completion, server availability, failure, and recovery events. Simulation time is seconds; rates are requests/second; service times and latency are seconds; capacity is concurrent service slots per backend; server service rate is requests/second per slot. Each heterogeneous server has configured capacity, service-rate estimate, and optional routing weight. No physical CPU measurement is implied.
+Use a discrete-event simulator with explicit request arrival, shared-queue wait, service start/completion, server availability, failure, and recovery events. Simulation time is seconds. Each server has a positive integer number of concurrent service slots and a positive service rate in work units/second/slot. Each request is served on one slot at a time. If its pre-generated work demand is `d` work units and the selected server's per-slot rate is `r` work units/second/slot, its service duration is exactly `d / r` seconds. The sampled service duration excludes queue waiting; response time is arrival-to-completion and therefore includes queue waiting. Exponential demand uses mean 1 work unit; deterministic diagnostic demand is 1 work unit. Effective processing capacity is `capacity_slots * service_rate_per_slot_per_second` in work units/second. This separates request size from heterogeneous server speed and makes the workload-to-capacity score dimensionally meaningful.
 
-Request service demand is generated from a configured distribution and seed. Routing sees only request attributes available at arrival, current time, current server health, configured capacity/rates, active/queued counts, and any explicitly observable remaining-service estimates. It cannot see future arrivals, sampled future service demands, or future failures. Failure state becomes visible only when its event occurs. Failed servers receive no new assignments; behavior when no server is available is to queue up to a configured limit, then mark the request dropped/timed out under the configured deadline rule. The queue, deadline, and request-demand distribution parameters are mandatory run configuration.
+Requests wait in one shared, FIFO load-balancer queue until a healthy server has a free slot; the selected policy chooses the destination at dispatch time. This avoids policy-specific per-server queue placement and gives every policy the same waiting line. The queue has a configured global bound. Requests beyond that bound are dropped as queue-overflow drops. A configured end-to-end deadline starts at arrival; a request that has not completed by its deadline is timed out and removed from the shared queue or service. Completion at exactly the deadline counts as completed. Routing sees server health, configured capacities/rates, active request counts, and the shared queue depth, but not future arrivals or sampled service demands. It uses the configured mean demand when estimating workload. Failure schedules are visible only when their events occur.
+
+CPU and memory are not physical measurements. The initial simulator may report a **simulated CPU proxy** equal to occupied service slots divided by configured slots. No memory-utilization value is reported in v1 because this model has no request-memory demand or memory capacity; adding a memory proxy requires an explicit model and configuration instead of an invented percentage.
 
 ### 3.2 Workloads and paired scenarios
 
-Support:
+The common default fleet has three heterogeneous servers:
 
-* **Stable:** stationary Poisson arrivals at configurable constant rate.
-* **Increasing:** piecewise-linear arrival rate rising from configured start to end rate over the run; arrivals sampled from the resulting non-homogeneous Poisson process.
-* **Bursty:** configurable alternating low/high-rate periods or a declared burst process; selected form, rates, durations, and random seed are recorded.
+| Server | Service slots | Rate per slot | Effective capacity |
+| --- | ---: | ---: | ---: |
+| `server-1` | 2 | 10 work units/s | 20 work units/s |
+| `server-2` | 4 | 10 work units/s | 40 work units/s |
+| `server-3` | 6 | 10 work units/s | 60 work units/s |
 
-The exact rate values, horizon, server fleet, service demand distribution, and failure schedules are experiment parameters, not hard-coded claims. For each paired comparison, all seven policies receive identical pre-generated arrival times/request attributes, server configurations, sampled service demands, and failure/recovery schedules. Use common random numbers and scenario IDs. Repeat independent scenario seeds; report the number and configuration of scenarios.
+The default service-demand distribution is exponential with mean 1 work unit. A deterministic demand of 1 work unit is available as a test/diagnostic option, not as the confirmatory default. Request demand is sampled once per scenario trace and reused for every policy. The default shared queue limit is 1,000 requests and the default request deadline is 30 seconds.
+
+The simulation clock starts at `t=0`. Generate arrivals only during the 600-second half-open interval `[0,600)`; the arrival process is stopped at `t=600`. The first 60 seconds `[0,60)` are warm-up: arrivals and service during warm-up affect server state and queues, but warm-up arrivals are excluded from measured request-outcome metrics. The measured arrival cohort is `[60,600)`, a 540-second measurement interval. After arrival generation stops, run a 60-second drain `[600,660]` with no new arrivals so remaining requests can complete or hit their 30-second deadline. Drain completions count toward the measured cohort's completion and throughput metrics; drain service time is excluded from the utilization measurement window `[60,600)`. All failure and recovery timestamps are absolute simulation times measured from `t=0`, not offsets from warm-up or the measurement window. Thus the canonical failure at `300 s` and recovery at `360 s` occur 300 and 360 seconds after simulation start. Increasing traffic ramps linearly from 30 requests/second at `t=0` to 150 requests/second at `t=600` over the full 600-second arrival period; arrivals are still generated only before `t=600`.
+
+Support these reproducible arrival processes:
+
+* **Stable:** stationary Poisson arrivals at 60 requests/second.
+* **Increasing:** a linearly increasing non-homogeneous Poisson rate from 30 to 150 requests/second over the 600-second arrival horizon.
+* **Bursty:** alternating Poisson rates of 30 requests/second for 45 seconds and 150 requests/second for 15 seconds, repeating on a 60-second period.
+
+These defaults yield an aggregate mean service capacity of 120 requests/second under mean demand 1. The stable and burst-average rates are 50% of that capacity, while increasing traffic and burst peaks exceed it. Defaults are reproducible scenario parameters, not claims about a physical network. They remain configurable and must be serialized with every run.
+
+For a confirmatory comparison, run 10 independent scenario replications derived deterministically from master seed 42 using NumPy `SeedSequence`. Each replication produces one immutable trace containing arrival times, request IDs/attributes, sampled service demands, and failure/recovery events. Replay that exact trace, server fleet, and configuration for all three policies (common random numbers). Keep independent RNG streams for trace generation and any policy tie-breaking so policy behavior cannot change later trace values. A quick interactive run may request one replication, but it must be marked exploratory. Report paired per-scenario results; requests within a replication are not independent experimental samples.
+
+The default baseline has no failures. A canonical recovery scenario uses the same workload and fleet, with `server-2` unavailable from 300 through 360 seconds. Failure times are part of the shared trace/configuration. At a shared timestamp, process service completions first, then failure/recovery transitions, then deadline expirations. Next dispatch the existing FIFO queue into the slots that remain available. Process arrivals at that timestamp in generated request-ID order; after each arrival is admitted or dropped, dispatch FIFO requests into any remaining eligible slots. Thus a service completing exactly at its deadline succeeds, and an arrival exactly at failure time sees the server as unavailable. These event-order rules are deterministic and recorded.
 
 ### 3.3 Policy definitions and information boundaries
 
-All policies use the same eligible server set and observable context, and must use deterministic, seeded tie-breaking when needed.
+All policies receive the same request stream. The shared queue is strict FIFO: only its head request may be dispatched, so no policy can bypass an older waiting request. A server is eligible only if it is healthy and has at least one free service slot. When a slot becomes available, dispatch the FIFO head to the server selected by the policy, then recompute eligibility and select again for the next head while both queued requests and eligible slots remain. If there is no eligible server, leave the queue in place until a completion or recovery creates a slot. A newly arriving request joins the tail and is dispatched immediately only if it is now the FIFO head and a slot is available.
 
-1. **Round Robin:** advance a cyclic pointer over currently healthy eligible servers; define pointer behavior when servers fail/recover and when none is available.
-2. **Least Connections:** route to healthy server with fewest active plus queued requests; tie-break by seeded server order.
-3. **Weighted:** weighted random selection among healthy servers with configured nonnegative weights. Weights are recorded; zero-weight servers are ineligible. This is a routing-weight baseline, distinct from capacity-aware optimization.
-4. **Random Forest:** supervised multiclass classifier trained on separate simulator training scenarios. For each training state, label the healthy server with the lowest estimated completion cost using only current observable state and configured server service-rate estimates. Training, validation/tuning, and final test scenario seeds are disjoint. The target is a simulated heuristic/oracle label, not real-world ground truth. If no healthy server exists, use common fallback.
-5–7. **GA, PSO, ACO:** optimize candidate routing plans with common objective `J` below, subject to health, capacity, queue, and deadline constraints. They have access to current state only and use the same fallback as other policies.
+The policies use the following exact rules:
 
-The optimization objective is:
+1. **Round Robin:** maintain a cursor in the configured server order. Starting at the cursor, scan forward cyclically and select the first eligible server. After selection, move the cursor to the configured position immediately after that server. Skip ineligible servers without changing their order. If none is eligible, make no selection and leave the cursor unchanged. Recovery does not reset the cursor.
+2. **Least Connections:** among eligible servers, minimize the number of currently active requests on the server. The shared waiting queue is unassigned and is not counted against any server. If multiple eligible servers tie, choose the first in a deterministic server ordering generated from that scenario's tie-breaking seed.
+3. **Weighted Load Balancing (capacity-aware workload):** for each eligible server `i`, calculate `score_i = (mean_request_demand * active_request_count_i) / (capacity_slots_i * service_rate_per_slot_i)`. Choose the eligible server with the smallest score, measured as estimated seconds of accumulated work at full capacity. The shared waiting queue is unassigned and excluded from each server's workload. If scores tie, use the same deterministic seeded server ordering as Least Connections. Recompute scores after every dispatch. This policy does not sample proportionally to `routing_weight` and does not inspect hidden sampled request demands.
 
-```text
-J = w1 * normalized_response_time
-  + w2 * normalized_load_imbalance
-  + w3 * request_drop_rate
-```
+All three policies see the same eligibility set and state. They do not see future arrivals or the current request's sampled service demand.
 
-Lower is better. Initial configurable weights are equal (`w1=w2=w3=1/3`), frozen before final runs, and recorded. Normalize response time by a configured response-time reference/SLA `T_ref` and cap at 1: `min(predicted_response_time / T_ref, 1)`. Normalize imbalance as `CV / (1 + CV)`, where `CV` is the coefficient of variation of predicted per-server utilization among healthy servers (0 if no utilization or fewer than two healthy servers). Drop rate is dropped requests divided by requests considered in the candidate plan. Record raw components and normalized components. `T_ref` and objective horizon remain required configuration decisions before final experiments.
+**Common failure model (applied identically to all policies):** at a failure timestamp, first finish any requests whose service-completion events occur at that exact time, per the event-order rule above. Mark the server unavailable so it receives no new dispatches. Fail every remaining in-flight request on that server immediately, count each as a failure drop, and release its slots; do not pause, migrate, or replay those requests after recovery. The shared FIFO queue contains unassigned requests, so it is unchanged by the failure and preserves its order. Requests in that queue remain subject to their original arrival-based deadlines and the common queue-overflow rule. At the configured recovery timestamp, mark the server healthy with all slots idle; dispatch any waiting queue head under the selected policy before admitting later arrivals at that timestamp. If every server is unavailable, continue queueing under the same limit and deadline rules.
 
-**Rolling planning definition:** at each arrival, candidate plans assign the current request and already queued, unassigned requests across currently healthy servers; no future request is added to the plan. The horizon is that finite set of pending requests, re-optimized at each new arrival. Commit only the current request's selected server; prior dispatched work is not moved. Predicted completion uses visible active/queued counts and configured mean service rates, not future sampled service demands. GA, PSO, and ACO must encode this same assignment problem and use the same candidate constraints and objective. This is a planned design; feasibility and encoding details require review before implementation.
+**Later Random Forest extension (not in the initial three-policy API):** it must be a separate model trained on simulated states, not the CIC-IDS2017 feature-selection evaluator. Before implementation, approve its observable input features, target labels, separate training/validation/test scenario seeds, tuning protocol, server-selection/fallback logic, inference timing, and comparison design. A reasonable research target to evaluate later is the eligible server with the lowest estimated completion time using only the current observable state and configured service-rate estimates; this is a simulated heuristic label, not real-world ground truth. Do not present this proposal as an implemented or finalized RF method.
 
-Optimizer state persists between arrivals within a run (warm-start population/positions/pheromone where the method supports it); it resets between paired runs. Record update frequency (each arrival), initialization, stopping/evaluation budget, tie-breaking, and fallback. If no feasible plan exists or the optimizer exceeds its decision budget, choose least-connections among healthy servers; if none are healthy, use the common queue/drop rule. Measure wall-clock decision time and model evaluations/iterations per decision; also report simulated/proxied compute overhead separately from modeled server service. Do not imply wall-clock optimizer time is server CPU utilization.
+GA, BPSO, and ACO are out of initial Study B scope. The optimization objective, rolling planning design, and optimizer settings from the superseded seven-policy draft do not apply to this initial traditional-policy comparison. Their feature-selection use in Study A is unchanged.
+
+The common dispatch rule is to wait if there is no eligible server, not to silently substitute another policy. Queue overflow and deadline expiration are handled identically for every policy and counted separately.
 
 ### 3.4 Metrics
 
-Compute from event records and state intervals, in simulation seconds unless otherwise stated:
+Compute from event records and state intervals. Request-outcome metrics use the measurement arrival cohort `[warmup_seconds, workload.duration_seconds)`, including outcomes resolved during the drain:
 
-* **Response time:** completion time minus arrival time for completed requests. Report mean and median plus P95/P99 over completed requests; include completed sample count. Dropped/timed-out requests are excluded from latency quantiles but reported separately.
-* **Throughput:** completed requests divided by the fixed measurement-window duration (requests/second), after declared warm-up and before declared drain/end time. Also report completion count and window boundaries.
-* **Drops/timeouts:** counts and rate over all offered requests; distinguish overload drops from deadline timeouts if both occur.
-* **Server utilization:** busy service-slot time divided by healthy available server-slot time over the measurement window. Report per-server and aggregate `sum(busy slot-seconds) / sum(healthy available slot-seconds)`; exclude unavailable intervals from denominator and report unavailable time separately. This is simulated service utilization, not measured CPU utilization.
-* **Load imbalance:** coefficient of variation (population standard deviation divided by mean) of per-server utilization fractions over the window among servers with positive healthy-available time. Report per-server fractions and define zero-mean case as zero; state when no eligible servers exist.
-* **Recovery time:** for each failure, elapsed time from server recovery event until system throughput over a rolling configured window again reaches at least a configured fraction of its pre-failure baseline for a configured number of consecutive windows. Baseline window, fraction, window length, and consecutive count must be recorded. Report unrecovered cases as censored/unrecovered, not zero.
-* **Policy overhead:** wall-clock time spent selecting routes and optimizer evaluations/iterations, plus any declared compute proxy. Report per-decision and total cost; the simulator's virtual time does not advance due to host wall-clock computation unless an explicit overhead model is configured.
+* **Response time/latency:** completion timestamp minus arrival timestamp for completed requests in the measurement cohort. Report mean, median, P95, P99, and completed count. Queue-overflow drops, failure drops, and timeouts are excluded from latency statistics and reported separately. Empty latency samples produce `null` statistics.
+* **Throughput:** number of measurement-cohort requests completed by the end of the drain divided by the 540-second measurement-window duration, in requests/second. This completion-yield measure may include requests completing during drain; report the count and exact window/cohort boundaries.
+* **Drops and timeouts:** separately report queue-overflow drops, failure drops, and deadline timeouts, plus total and rate divided by measurement-cohort offered requests. Include warm-up counts separately only as diagnostics.
+* **Server utilization:** per-server busy service-slot seconds divided by healthy available service-slot seconds in `[60,600)`. Aggregate utilization is `sum(busy slot-seconds) / sum(healthy available slot-seconds)`. Exclude failed intervals from the denominator and report unavailable seconds. It is a simulated service metric, not CPU utilization.
+* **Simulated CPU proxy:** per-server and aggregate busy-slot fraction over the measurement window, calculated from occupied slots divided by configured slots and time-averaged over healthy intervals. Label it “simulated CPU proxy”; never call it hardware CPU measurement. It is closely related to server utilization and must be shown separately only when useful.
+* **Memory utilization:** omitted in v1. No memory resource model exists, so report no memory percentage rather than fabricate a proxy.
+* **Load imbalance:** coefficient of variation (population standard deviation divided by mean) of per-server utilization fractions for servers with positive healthy-available time. Report each server's fraction. Define the value as zero when the mean is zero; if no eligible server has healthy time, report `null`.
+* **Request distribution:** per-server dispatched and completed counts and dispatch share (`server dispatches / all measurement-cohort dispatches`). Report zero share when there are no dispatches.
+* **Recovery time:** for each failure, calculate baseline system throughput over the 60 seconds immediately before failure. After the server recovers, calculate system throughput in consecutive, non-overlapping 10-second windows. The threshold is 90% of that pre-failure baseline. Recovery is declared only after throughput is at or above the threshold for three consecutive windows (30 continuous measured seconds). Any window below the threshold resets the consecutive-window count to zero; the system must not remain below the threshold during the qualifying period. Report both recovery duration (elapsed time from the scheduled server recovery timestamp to the end of the third qualifying window) and the absolute recovery timestamp (that window-end simulation time); neither is the scheduled server recovery timestamp. Require a nonzero baseline and 60 seconds of pre-failure data; otherwise report `null` for both recovery fields with a reason. If three qualifying windows are not observed by the end of measurement/drain, mark both values unrecovered (`null`), not zero.
+* **Policy decision overhead:** record host wall-clock duration for each route-selection decision and report decision count, total, mean, median, P95, P99, and maximum. Percentiles use linear interpolation. With no decisions, report zero for all aggregate fields. Wall-clock values do not advance virtual time or affect routing outcomes and are not server CPU utilization. Report optimizer evaluations only for a future optimizer extension.
 
-Warm-up, drain, measurement window, request deadlines, and recovery threshold values remain configurable and must be frozen before final comparisons. Simulator assumptions and limitations (arrival/service distributions, queued-work visibility, service-rate estimation, no physical network/CPU effects, and event ordering) accompany results.
+The defaults above may be overridden in exploratory scenarios; every override is part of the run configuration. No physical network, CPU, or memory behavior is claimed. Assumptions and limitations, scenario ID, cohort boundaries, event-order rules, and metric denominators accompany every result.
+
+### 3.5 Initial configuration defaults
+
+| Setting | Default |
+| --- | --- |
+| Algorithms | `round_robin`, `least_connections`, `weighted` (capacity-aware workload) |
+| Default workload | `stable` |
+| Master seed / confirmatory replications | `42` / `10` |
+| Servers | `server-1: 2 slots`, `server-2: 4 slots`, `server-3: 6 slots`; each `10 work units/s/slot` |
+| Request service demand | Exponential, mean `1 work unit` |
+| Arrival horizon | `600 s` |
+| Warm-up / measurement / drain | `60 s` / `[60,600)` (`540 s`) / `60 s` |
+| Queue | One shared FIFO queue, maximum `1,000` waiting requests |
+| Request deadline | `30 s` from arrival |
+| Stable arrivals | `60 requests/s` |
+| Increasing arrivals | Linear `30` to `150 requests/s` over the horizon |
+| Bursty arrivals | `30 requests/s` for `45 s`, then `150 requests/s` for `15 s`; repeat every `60 s` |
+| Default failure schedule | None |
+| Canonical recovery scenario | `server-2` fails at `300 s`, recovers at `360 s` |
+| Recovery threshold | 60-second pre-failure baseline; 10-second windows; 90% threshold for 3 consecutive windows |
+| RF, GA, BPSO, ACO routing | Excluded from initial Study B |
+
+### 3.6 API contracts and local run lifecycle
+
+The FastAPI simulation API uses a process-local run registry and cooperative cancellation. One worker thread executes paired runs; at most two records may be nonterminal (`queued`, `running`, or `cancelling`). The second accepted run can remain queued. Return HTTP `429` when both slots are occupied. Keep up to the latest 50 terminal records. Registry updates and status snapshots are protected by a lock. The executor is created at application-lifespan startup and joined at shutdown; queued runs become cancelled with a finish timestamp, while running runs receive cooperative cancellation and are joined. Restarting the same app lifespan creates a fresh executor and clears old process-local records. A process restart loses active and stored run records; this is a local single-process design, not a durable job service, and must not be used behind multiple application worker processes.
+
+* `POST /api/v1/simulations` — accept a `SimulationRunRequest` with the `SimulationConfig` fields plus `policies` and `replications`. Policy IDs must be nonempty, unique and limited to `round_robin`, `least_connections`, and `weighted`; replications must be at least one. The default is all three policies and 10 replications. Return HTTP `202` with a unique `run_id`, initial `status: "queued"`, UTC creation time, and zeroed progress. Invalid request/configuration fields return FastAPI validation errors.
+* `GET /api/v1/simulations/{run_id}` — return `run_id`, status (`queued | running | completed | failed | cancelling | cancelled`), UTC created/started/finished timestamps, completed and total replications/policy runs, and a safe error code/message when failed.
+* `GET /api/v1/simulations/{run_id}/results` — return HTTP `409` until the entire paired run is completed. A completed response contains policy-level per-replication results, paired aggregate means/standard deviations/95% confidence intervals, the full configuration, master and replication seeds, assumptions and metric definitions. Return `404` for unknown/expired IDs and `409` for failed, queued, running, cancelling or cancelled runs without complete results.
+* `DELETE /api/v1/simulations/{run_id}` — a queued run transitions directly to `cancelled`; a running run transitions to `cancelling` and stops cooperatively at the next simulation event boundary. Accepted requests return HTTP `202`; cancellation of an already terminal run is idempotent and returns its terminal status.
+
+The simulation engine remains independent of FastAPI. It accepts optional progress and cancellation callbacks; completed-policy progress advances after each complete policy simulation and completed-replication progress advances after all policies for that replication finish. Cancellation is checked between discrete events and policy runs. Host wall-clock route-selection measurements do not advance simulation time or affect routing. Worker exceptions become failed run records and do not terminate the API process. The registry is in-memory, so its records and results do not survive an application restart.
 
 ## 4. Cross-cutting analysis and run records
 
 Every run records a unique experiment ID, timestamp, seeds, full configuration, code revision if available, Python/package versions, OS/CPU/memory, thread settings, dataset source/checksums or simulation scenario IDs, and all preprocessing/optimizer/policy parameters. Keep exploratory tuning runs separate and clearly marked; freeze settings before final test/scenario evaluation.
 
-For repeated runs report mean, standard deviation, and 95% confidence intervals where appropriate. State the interval method and sample count. For policies compared on shared traces, use paired per-scenario differences. Choose paired statistical tests only after checking the assumptions of the selected test (including difference distribution/independence); report effect estimates and intervals, not only p-values. Do not treat requests within one simulation run as independent experimental replications. For Study A, use seed-level or split-level units appropriate to the design; one held-out test score is not evidence of repeatability across datasets.
+For Study B's 10 paired scenario replications, report per-policy mean and standard deviation and paired per-scenario differences. Report 95% percentile bootstrap intervals from 10,000 resamples of the scenario-level paired units, using a deterministic bootstrap RNG derived from the master seed. Resample whole scenario rows so the three policies remain paired. State the method and sample count. Requests within one simulation run are not independent experimental replications. Treat the 10-seed interval as uncertainty across these simulated scenarios, not as evidence about physical networks. For Study A, use seed-level or split-level units appropriate to that design; one held-out test score is not evidence of repeatability across datasets.
 
 No experimental result is present in this document. Claims of improvement require held-out or paired repeated results and disclosed uncertainty.
 
@@ -136,12 +191,13 @@ No experimental result is present in this document. Claims of improvement requir
 * Planned split targets are 60/20/20 with group-aware assignment preferred and an explicitly labeled stratified random fallback if grouping cannot be supported.
 * Selector comparisons use a common maximum RF evaluation budget; record fit counts and separate optimizer, RF evaluation, preprocessing, and end-to-end times.
 * Planned stochastic repetition default is 10 seeds per feature optimizer; reductions are documented as limitations.
-* Study B is a discrete-event model using seconds, req/s, service time, slot capacity, and explicit failure/recovery events.
-* Workloads are stationary Poisson, linearly increasing non-homogeneous Poisson, and a declared configurable burst process.
-* Paired policy comparisons share traces, server configurations, service demands, and failure schedules.
-* RF labels are generated from separate scenarios using minimum estimated completion cost from observable state and configured service-rate estimates; this is a simulated heuristic/oracle target.
-* GA/PSO/ACO use the same objective, equal initial weights, rolling pending-work planning, update each arrival, persistent state within run, reset between runs, and least-connections fallback when feasible.
-* Metrics and denominators are defined in Section 3.4; simulated utilization is not physical CPU usage.
+* Study B v1 compares Round Robin, Least Connections, and capacity-aware Weighted Load Balancing. Weighted is the minimum estimated outstanding work divided by effective server capacity, with seeded deterministic tie-breaking; this explicitly supersedes the older weighted-random draft definition.
+* Study B v1 excludes RF routing until its independent simulated training target and evaluation protocol are approved. GA, BPSO, and ACO remain Study A feature selectors and are not initial routing policies.
+* Study B uses a shared FIFO queue, exponential service-demand default, server slot/rate configuration, and explicit failure/recovery events; the default fleet, workload rates, warm-up/drain, deadline, queue bound, and canonical recovery scenario are listed in Section 3.5.
+* Stable arrivals are Poisson, increasing arrivals are linearly increasing non-homogeneous Poisson, and bursty arrivals alternate configured low/high Poisson rates.
+* Paired policy comparisons replay identical pre-generated arrivals, request IDs/attributes, service demands, server definitions, and failure schedules. Ten scenario replications derive reproducibly from master seed 42.
+* Metrics and denominators are defined in Section 3.4. Service utilization and CPU are simulated values/proxies; memory utilization is omitted without a memory model.
+* Simulation API contracts and the process-local cancellable run lifecycle are documented in Section 3.6 and implemented for local single-process use.
 * Run metadata, uncertainty, paired analysis, and separation of exploratory tuning/final evaluation are mandatory.
 
 ## 6. Unresolved decisions and run blockers
@@ -157,15 +213,11 @@ No experimental result is present in this document. Claims of improvement requir
 
 ### Simulation and Study B
 
-7. Scenario configurations: arrival-rate values, horizon, burst schedule, server fleet/rates/capacities/weights, service-demand distribution, failure/recovery schedules, queue bound, deadlines, and seed list.
-8. `T_ref`, rolling objective plan feasibility for queued requests, feature-to-server assignment encoding for each optimizer, and numeric per-decision stopping budget. The proposed rolling plan is conceptual until these are checked against the event model.
-9. Warm-up/drain/measurement-window settings and recovery baseline fraction/window/consecutive-window threshold values.
-10. RF feature vector/encoding, training-scenario count, validation/tuning protocol, and classifier settings.
-11. Whether policy computation overhead remains reporting-only (host wall time/proxy) or is explicitly modeled as simulation delay; default in this draft is reporting-only, with virtual simulation time unaffected.
+7. RF routing model only if added later: observable features, target generation, training/validation/test scenario counts and seeds, tuning protocol, classifier settings, fallback, and inference-time procedure.
+8. Whether a modeled memory proxy should be introduced later; v1 reports no memory percentage.
 
 ### Cross-cutting
 
-12. Exact installed Python/package versions and artifact format/versioning. The initial skeleton declares bounded Python dependencies in `backend/pyproject.toml`; platform support beyond the documented local Windows setup remains to be verified.
-13. Confidence-interval and statistical-test procedures selected after the final experimental unit and sample size are established.
+9. Exact installed Python/package versions and artifact format/versioning. The initial skeleton declares bounded Python dependencies in `backend/pyproject.toml`; platform support beyond the documented local Windows setup remains to be verified.
 
-Items 1–6 and 7–10 block defensible final experiments. Until resolved, implementation may be limited to isolated scaffolding and synthetic/unit examples, not a claimed CIC-IDS2017 or comparative evaluation.
+Items 1–6 block defensible Study A experiments. Study B v1 configuration defaults and metric rules are specified in Sections 3.0–3.6 for project-owner review; they must be accepted before Phase 2 implementation. Item 7 blocks any RF routing extension, not the three-policy traditional simulator. No implementation may claim physical network results.
