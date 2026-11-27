@@ -1,0 +1,53 @@
+{
+  "report_title": "CIC-IoT2023 exact global duplicate audit",
+  "report_id": "20261127T075618Z-952db451",
+  "audit_date": "2026-11-27",
+  "status": "INCOMPLETE",
+  "root_path": "<LOCAL_CIC_IOT2023_CSV_ROOT>",
+  "scratch_directory": "<LOCAL_AUDIT_SCRATCH_DIR>",
+  "csv_file_count": 309,
+  "expected_total_rows": 46776700,
+  "total_rows_scanned": null,
+  "rows_processed_before_abort": 42847821,
+  "candidate_rows_verified": 0,
+  "full_feature_comparisons": 0,
+  "peak_audit_scratch_bytes": 1375809536,
+  "failure_reason": "ValueError: Expected 39 feature values, got 33",
+  "scratch_preflight": {
+    "available_bytes": 12522205184,
+    "estimated_peak_scratch_bytes": 7184901120,
+    "estimated_bytes_per_source_row": 128,
+    "estimate_headroom_factor": 1.2,
+    "required_free_bytes": 10737418240,
+    "audit_scratch_cap_bytes": 8589934592,
+    "reserved_free_bytes": 2147483648,
+    "safe_to_run": true
+  },
+  "methodology": {
+    "description": "Pass 1 streams CSV records and writes only a 128-bit candidate fingerprint, file ID, and byte offset to a temporary SQLite index. Pass 2 considers only fingerprints occurring more than once, rereads those source records, and compares full canonical feature rows using disk-backed representative locators. No full feature row is persisted in the scratch database.",
+    "record_offsets": "Offsets are captured from a binary stream immediately before csv.reader parses each logical record. Its lazy physical-line iterator preserves quoted fields, escaped quotes, CRLF and quoted multiline records. Candidate rereads seek to the captured byte offset and parse one complete logical CSV record.",
+    "canonicalization": "Each of the 39 fields is parsed as a numeric float64 and encoded little-endian. Signed zero is normalized to positive zero and NaNs to the platform's canonical Python NaN encoding; infinities retain sign. Folder labels use the existing multiclass mapping, including Benign_Final to Benign.",
+    "collision_safety": "BLAKE2b-128 is only a candidate fingerprint. Every candidate is reread and its complete 312-byte canonical row is compared against representative source rows. A fingerprint collision with different features creates separate representatives and is not counted as a duplicate.",
+    "duplicate_definitions": "Complete-row identity is the canonical 39-feature row plus folder-derived label. Feature-only representatives separately identify conflicting-label groups. Duplicate occurrences are records beyond the first for a feature/label group; within-file excess and additional represented files are reported separately.",
+    "chunk_size_rows": 50000,
+    "fingerprint": "BLAKE2b 128-bit candidate only; full 39-feature verification required",
+    "scratch_estimate": "128 bytes per source row plus 20% headroom; this is a planning estimate, while the 8 GiB audit-owned file cap is enforced during execution."
+  },
+  "exact_duplicate_occurrences": null,
+  "unique_duplicate_groups": null,
+  "duplicates_within_same_file_occurrences": null,
+  "duplicates_across_different_files_occurrences": null,
+  "duplicate_groups_within_same_file": null,
+  "duplicate_groups_across_different_files": null,
+  "conflicting_label_feature_groups": null,
+  "conflicting_label_feature_rows": null,
+  "fingerprint_collision_groups": null,
+  "per_class_duplicate_occurrences": null,
+  "limitations": [
+    "Labels are provenance labels derived from category folders, not independent ground truth.",
+    "The audit counts duplicates and never removes or changes source records.",
+    "No capture/session independence is inferred from file boundaries.",
+    "The 128-byte-per-row scratch estimate is a planning estimate, not a measured database size; the 8 GiB cap and 2 GiB free-space reserve are enforced during the run.",
+    "A pathological fingerprint bucket containing many distinct rows can make exact representative comparisons slow; disk use remains capped and the audit stops incomplete if its cap or free-space reserve is threatened."
+  ]
+}

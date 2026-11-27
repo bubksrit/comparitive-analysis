@@ -211,46 +211,101 @@ def _split_rows(
     config: DatasetConfig,
     group_columns: list[str] | None = None,
     time_column: str | None = None,
+    identical_feature_groups: pd.Series | None = None,
 ) -> tuple[dict[str, np.ndarray], str, list[str], dict[str, Any]]:
     indices = np.arange(len(frame))
     strategy = config.split_strategy
     if strategy == "auto":
-        strategy = "group" if group_columns else "time" if time_column else "stratified_random"
+        strategy = (
+            "group" if group_columns else "time" if time_column
+            else "group" if identical_feature_groups is not None
+            else "stratified_random"
+        )
+    if strategy == "stratified_random" and identical_feature_groups is not None:
+        raise DatasetFoundationError(
+            "Identical-feature grouping is enabled; use split_strategy='auto' or 'group' "
+            "to keep duplicate model vectors in one partition"
+        )
 
     if strategy == "group":
         active_group_columns = group_columns or config.group_columns
         missing = [name for name in active_group_columns if name not in frame.columns]
         if missing:
             raise DatasetFoundationError(f"Configured grouping columns are absent: {missing}")
-        group_values = frame[active_group_columns]
-        if group_values.isna().any(axis=None):
-            raise DatasetFoundationError("Configured grouping columns contain missing values")
-        groups = group_values.astype(str).agg("\x1f".join, axis=1)
+        if active_group_columns:
+            group_values = frame[active_group_columns]
+            if group_values.isna().any(axis=None):
+                raise DatasetFoundationError("Configured grouping columns contain missing values")
+            groups = group_values.astype(str).agg("\x1f".join, axis=1)
+        elif identical_feature_groups is not None:
+            groups = identical_feature_groups.astype(str)
+        else:
+            raise DatasetFoundationError("Group-aware split requires grouping columns or duplicate groups")
+        if identical_feature_groups is not None and active_group_columns:
+            # Combine verified metadata groups with feature-row groups so neither
+            # relation can be split across partitions. Components are conservative:
+            # any shared group or identical model vector remains in one partition.
+            pairs = list(zip(groups.astype(str), identical_feature_groups.astype(str), strict=True))
+            parent = list(range(len(pairs)))
+
+            def find(item: int) -> int:
+                while parent[item] != item:
+                    parent[item] = parent[parent[item]]
+                    item = parent[item]
+                return item
+
+            owners: dict[tuple[str, str], int] = {}
+            for item, (metadata_group, feature_group) in enumerate(pairs):
+                for key in (("metadata", metadata_group), ("feature", feature_group)):
+                    previous = owners.setdefault(key, item)
+                    left, right = find(item), find(previous)
+                    if left != right:
+                        parent[left] = right
+            roots = [find(item) for item in range(len(parent))]
+            groups = pd.Series(roots, index=frame.index)
         if groups.nunique() < 3:
             raise DatasetFoundationError(
                 "Group-aware train/validation/test split requires at least three distinct groups; "
                 "explicitly choose stratified_random only if the fallback is acceptable"
             )
-        first = GroupShuffleSplit(
-            n_splits=1, test_size=config.test_fraction, random_state=config.random_seed
-        )
-        remaining_pos, test_pos = next(first.split(indices, labels, groups))
         remain_fraction = config.train_fraction + config.validation_fraction
         validation_relative = config.validation_fraction / remain_fraction
-        second = GroupShuffleSplit(
-            n_splits=1,
-            test_size=validation_relative,
-            random_state=config.random_seed + 1,
-        )
-        train_relative, validation_relative_indices = next(
-            second.split(remaining_pos, labels.iloc[remaining_pos], groups.iloc[remaining_pos])
-        )
-        train_indices = remaining_pos[train_relative]
-        validation_indices = remaining_pos[validation_relative_indices]
-        test_indices = indices[test_pos]
+        expected_classes = set(labels.astype(str))
+        split_candidate = None
+        for attempt in range(64):
+            first = GroupShuffleSplit(
+                n_splits=1,
+                test_size=config.test_fraction,
+                random_state=config.random_seed + 2 * attempt,
+            )
+            remaining_pos, test_pos = next(first.split(indices, labels, groups))
+            second = GroupShuffleSplit(
+                n_splits=1,
+                test_size=validation_relative,
+                random_state=config.random_seed + 2 * attempt + 1,
+            )
+            train_relative, validation_relative_indices = next(
+                second.split(remaining_pos, labels.iloc[remaining_pos], groups.iloc[remaining_pos])
+            )
+            train_indices = remaining_pos[train_relative]
+            validation_indices = remaining_pos[validation_relative_indices]
+            test_indices = indices[test_pos]
+            if all(
+                set(labels.iloc[partition].astype(str)) == expected_classes
+                for partition in (train_indices, validation_indices, test_indices)
+            ):
+                split_candidate = (train_indices, validation_indices, test_indices)
+                break
+        if split_candidate is None:
+            raise DatasetFoundationError(
+                "Could not construct a group-disjoint split with every target class in all "
+                "three partitions after 64 deterministic attempts; inspect class/group counts"
+            )
+        train_indices, validation_indices, test_indices = split_candidate
         details = {
             "strategy": "group_aware",
             "group_columns": active_group_columns,
+            "identical_feature_rows_kept_together": identical_feature_groups is not None,
             "group_counts": {
                 "train": int(groups.iloc[train_indices].nunique()),
                 "validation": int(groups.iloc[validation_indices].nunique()),
@@ -267,6 +322,10 @@ def _split_rows(
         return partition_indices, "group_aware", details["group_columns"], details
 
     if strategy == "time":
+        if identical_feature_groups is not None:
+            raise DatasetFoundationError(
+                "Time-ordered splitting cannot also guarantee identical-feature groups stay together"
+            )
         active_time_column = time_column or config.time_column
         if active_time_column not in frame.columns:
             raise DatasetFoundationError(f"Configured time column is absent: {active_time_column}")
@@ -450,6 +509,15 @@ def load_and_audit(config: DatasetConfig) -> DatasetFoundation:
     feature_columns = [column for column in frame.columns if column not in excluded]
     if not feature_columns:
         raise DatasetFoundationError("No eligible feature columns remain after explicit exclusions")
+    exact_feature_duplicate_rows = int(frame[feature_columns].duplicated(keep="first").sum())
+    identical_feature_groups = None
+    if config.group_identical_feature_rows:
+        # Equal vectors always receive equal IDs. A 64-bit collision can only
+        # merge distinct vectors into one group, which is conservative for split
+        # leakage prevention and does not assert duplicate identity.
+        identical_feature_groups = pd.util.hash_pandas_object(
+            frame[feature_columns], index=False
+        ).astype("uint64").map(lambda value: f"{value:016x}")
     column_audit: list[dict[str, Any]] = []
     for column in frame.columns:
         suggestion = _suggestion_for_column(column)
@@ -470,16 +538,22 @@ def load_and_audit(config: DatasetConfig) -> DatasetFoundation:
         )
 
     row_splits, actual_strategy, split_columns, split_strategy_details = _split_rows(
-        frame, labels, config, active_group_columns, active_time_column
+        frame, labels, config, active_group_columns, active_time_column,
+        identical_feature_groups,
     )
     partitions = {
         name: _make_partition(frame[feature_columns], labels, indices)
         for name, indices in row_splits.items()
     }
     split_details = {
+        "partition_row_index_sha256": {
+            name: hashlib.sha256(np.asarray(indices, dtype="<i8").tobytes()).hexdigest()
+            for name, indices in row_splits.items()
+        },
         "requested_strategy": config.split_strategy,
         "actual_strategy": actual_strategy,
         "group_or_time_columns": split_columns,
+        "identical_feature_groups_used_for_split": config.group_identical_feature_rows,
         "requested_fractions": {
             "train": config.train_fraction,
             "validation": config.validation_fraction,
@@ -503,6 +577,16 @@ def load_and_audit(config: DatasetConfig) -> DatasetFoundation:
     split_details.update(split_strategy_details)
     report = {
         "dataset_name_as_configured": config.dataset_name,
+        "study_label_as_configured": config.study_label
+        or f"{config.dataset_name} classification",
+        "raw_data_path_as_configured": (
+            str(config.raw_data_path) if config.raw_data_path is not None else None
+        ),
+        "folder_label_strategy_as_configured": config.label_strategy,
+        "sample_rows_per_folder_as_configured": config.sample_rows_per_folder,
+        "sample_random_seed_as_configured": (
+            config.sample_random_seed if config.sample_rows_per_folder is not None else None
+        ),
         "source_url_as_configured": config.source_url,
         "release_or_version_as_configured": config.release_or_version,
         "retrieval_date_as_configured": config.retrieval_date,
@@ -542,6 +626,8 @@ def load_and_audit(config: DatasetConfig) -> DatasetFoundation:
         },
         "infinities_by_column_before_replacement": infinity_counts,
         "duplicate_row_count_not_removed": duplicate_rows,
+        "identical_eligible_feature_rows_not_removed": exact_feature_duplicate_rows,
+        "group_identical_feature_rows_as_configured": config.group_identical_feature_rows,
         "constant_columns_not_removed": constant_columns,
         "duplicate_value_columns_not_removed": duplicate_values,
         "split": split_details,

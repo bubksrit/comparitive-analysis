@@ -79,7 +79,7 @@ class MetricSummary(StrictModel):
 
 class PartAExperimentResult(StrictModel):
     metadata: RunMetadata
-    study_label: Literal["CIC-IDS2017 classification"] = "CIC-IDS2017 classification"
+    study_label: str = "CIC-IDS2017 classification"
     dataset_name: str
     dataset_identity_verified: bool
     dataset_provenance: dict[str, Any]

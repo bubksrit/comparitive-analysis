@@ -275,7 +275,7 @@ class ClassificationMetrics(StrictModel):
 
 class FeatureSelectionResult(StrictModel):
     metadata: RunMetadata
-    study_label: Literal["CIC-IDS2017 classification"] = "CIC-IDS2017 classification"
+    study_label: str = "CIC-IDS2017 classification"
     algorithm: Literal["full_feature_baseline", "ga", "binary_pso", "aco"]
     selected_features: list[str]
     eligible_feature_count: int = Field(ge=1)
@@ -296,6 +296,7 @@ class FeatureSubsetEvaluationResult(StrictModel):
     evaluation_partition: Literal["validation", "test"]
     evaluation_role: Literal["full_feature_baseline", "feature_subset"]
     dataset_name: str
+    study_label: str = "CIC-IDS2017 classification"
     dataset_identity_verified: bool = False
     target_column: str
     label_mapping: dict[str, str]

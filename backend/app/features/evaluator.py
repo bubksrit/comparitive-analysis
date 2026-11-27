@@ -203,6 +203,7 @@ class RandomForestEvaluator:
             evaluation_partition=partition_name,
             evaluation_role=evaluation_role,
             dataset_name=dataset.config.dataset_name,
+            study_label=dataset.config.study_label or f"{dataset.config.dataset_name} classification",
             dataset_identity_verified=dataset.report["dataset_identity_verified"],
             target_column=dataset.config.target_column,
             label_mapping=dataset.config.label_mapping,

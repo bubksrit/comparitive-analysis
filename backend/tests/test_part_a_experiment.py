@@ -13,11 +13,12 @@ from app.features.experiment import default_synthetic_config, run_part_a_experim
 from app.models.dataset import DatasetConfig
 
 
-def _synthetic_dataset(tmp_path):
+def _synthetic_dataset(tmp_path, study_label=None):
     csv_path = make_fixture(tmp_path / "synthetic_runner_fixture.csv", seed=123)
     return load_and_audit(
         DatasetConfig(
             dataset_name="Synthetic unified-runner fixture (not CIC-IDS2017)",
+            study_label=study_label,
             data_path=csv_path,
             target_column="class_label",
             group_columns=["fixture_group"],
@@ -139,3 +140,15 @@ def test_runner_requires_matching_selector_fitness_and_evaluation_protocol():
             binary_pso=bad_bpso,
             aco=config.aco,
         )
+
+
+def test_runner_uses_configured_study_label(tmp_path):
+    expected_label = "CIC-IoT2023 34-class attack classification"
+    dataset = _synthetic_dataset(tmp_path, study_label=expected_label)
+    result = run_part_a_experiment(
+        dataset, default_synthetic_config([7]), output_dir=tmp_path / "labelled_result"
+    )
+
+    assert result.study_label == expected_label
+    saved = json.loads(Path(result.summary_json_path).read_text(encoding="utf-8"))
+    assert saved["study_label"] == expected_label

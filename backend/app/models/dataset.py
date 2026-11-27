@@ -12,9 +12,14 @@ class DatasetConfig(StrictModel):
     """All dataset-specific names are user configured and checked against the files."""
 
     dataset_name: str = "CIC-IDS2017"
+    study_label: str | None = None
     source_url: str | None = None
     release_or_version: str | None = None
     retrieval_date: str | None = None
+    raw_data_path: Path | None = None
+    label_strategy: Literal["binary", "multiclass"] | None = None
+    sample_rows_per_folder: int | None = Field(default=None, ge=1)
+    sample_random_seed: int = Field(default=42, ge=0)
     data_path: Path
     file_glob: str = "*.csv"
     target_column: str = Field(min_length=1)
@@ -24,6 +29,7 @@ class DatasetConfig(StrictModel):
     label_mapping: dict[str, str] = Field(default_factory=dict)
     excluded_columns: dict[str, str] = Field(default_factory=dict)
     group_columns: list[str] = Field(default_factory=list)
+    group_identical_feature_rows: bool = False
     time_column: str | None = None
     split_strategy: Literal["auto", "group", "time", "stratified_random"] = "auto"
     train_fraction: float = Field(default=0.6, gt=0, lt=1)
@@ -36,6 +42,10 @@ class DatasetConfig(StrictModel):
     def validate_config(self) -> "DatasetConfig":
         if abs(self.train_fraction + self.validation_fraction + self.test_fraction - 1.0) > 1e-9:
             raise ValueError("train_fraction, validation_fraction, and test_fraction must sum to 1")
+        if self.raw_data_path is not None and self.label_strategy is None:
+            raise ValueError("raw_data_path requires a folder-derived label_strategy")
+        if self.sample_rows_per_folder is not None and self.raw_data_path is None:
+            raise ValueError("sample_rows_per_folder requires raw_data_path")
         if self.strict_expected_columns and not self.expected_columns:
             raise ValueError("strict_expected_columns requires a non-empty expected_columns list")
         if len(set(self.group_columns)) != len(self.group_columns):

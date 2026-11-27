@@ -96,6 +96,13 @@ def test_audit_reports_schema_counts_and_keeps_nonconfigured_candidates(syntheti
     assert "capture_day" not in result.feature_columns
     assert result.splits.split_details["actual_strategy"] == "group_aware"
     assert result.splits.split_details["group_overlap"] is False
+    assert set(result.splits.split_details["partition_row_index_sha256"]) == {
+        "train", "validation", "test"
+    }
+    assert all(
+        len(digest) == 64
+        for digest in result.splits.split_details["partition_row_index_sha256"].values()
+    )
     with pytest.raises(RuntimeError, match="Test partition is sealed"):
         result.splits.get_test_for_final_evaluation()
     assert len(result.splits.get_test_for_final_evaluation(final_choices_frozen=True).labels) > 0

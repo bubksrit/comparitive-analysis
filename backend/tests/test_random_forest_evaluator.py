@@ -127,3 +127,14 @@ def test_empty_or_ineligible_feature_subsets_are_rejected(tmp_path):
     with pytest.raises(ValueError, match="ineligible or unknown"):
         evaluator.evaluate_validation(dataset, ["class_label"])
 
+
+
+def test_evaluation_result_uses_configured_study_label(tmp_path):
+    dataset = _synthetic_dataset(tmp_path)
+    dataset.config.study_label = "CIC-IoT2023 34-class attack classification"
+
+    result = RandomForestEvaluator().evaluate_validation(
+        dataset, ["numeric_signal"], persist_run=False
+    )
+
+    assert result.study_label == "CIC-IoT2023 34-class attack classification"
