@@ -250,6 +250,7 @@ def run_part_a_experiment(
             software_versions=software,
             hardware_description=f"{environment['platform']} | {environment['processor']}",
         ),
+        study_label=dataset.config.study_label or f"{dataset.config.dataset_name} classification",
         dataset_name=dataset.config.dataset_name,
         dataset_identity_verified=bool(dataset.report["dataset_identity_verified"]),
         dataset_provenance={

@@ -1,16 +1,16 @@
 # Experimental Protocol and Decision Register
 
-**Status:** protocol draft. This file records choices supplied or selected for the initial study design; it is not a report of experimental results. No dataset facts are inferred from a filename or assumed from a commonly circulated copy. A final run is blocked until the dataset manifest and unresolved protocol items below are completed.
+**Status:** Study A's CIC-IoT2023 development experiment and Study B's initial three-policy simulation implementation are documented here. Study A findings remain preliminary because local source provenance, schema, labels, and the complete run manifest are unresolved. Study B outputs are simulated; no physical network performance is claimed.
 
 ## 1. Study separation
 
-Study A uses real CIC-IDS2017 records for supervised classification. Study B uses a synthetic discrete-event model for routing. Study B does not replay CIC-IDS2017 as network traffic and does not measure a physical network. Every artifact and visualization must state its source as either `CIC-IDS2017 classification` or `simulated load balancing`.
+Study A uses CIC-IoT2023 for supervised classification. Study B uses a synthetic discrete-event model for routing. Study B does not replay CIC-IoT2023 as network traffic and does not measure a physical network. Every artifact and visualization must state its source as either `CIC-IoT2023 classification` or `simulated load balancing`.
 
-## 2. Study A — CIC-IDS2017 feature selection
+## 2. Study A — CIC-IoT2023 feature selection
 
 ### 2.1 Dataset identity and audit gate
 
-The dataset is CIC-IDS2017, but the exact source URL/provider, release/archive version, download date, checksums, input filenames, target column, actual label values, and label mapping have **not yet been verified**. They must be recorded in a run-specific `DatasetManifest` before analysis. Do not silently combine differently processed mirrors or file variants.
+**Dataset approval status: Approved.** The faculty/team has approved CIC-IoT2023 as the Workstream A dataset. The exact source package and acquisition path for the local files, release/archive version, download date, checksums, input filenames, target column, actual label values, and label mapping have **not yet been fully verified**. Complete these details in a run-specific `DatasetManifest` before analysis. Approval of the dataset choice does not constitute technical verification. Do not silently combine differently processed mirrors or file variants. Approval and technical-audit records are available in the [CIC-IoT2023 dataset approval audit](https://github.com/bubksrit/comparitive-analysis/blob/main/docs/audits/CIC-IoT2023_DATASET_AUDIT.md) and the [provenance and ground-truth audit](https://github.com/bubksrit/comparitive-analysis/blob/main/docs/audits/cic_iot2023_provenance_and_ground_truth.md).
 
 The manifest must list every input file and its checksum; row counts; column names and types; target field and mapping from observed source labels to canonical labels; eligible feature columns in exact order; and excluded columns with reason. Candidate exclusion reasons include target/label fields, row identifiers, timestamps used only for grouping, duplicated columns, constants, and fields judged to leak labels or identify capture scenarios. These are audit categories, not assertions that any particular named field exists.
 
@@ -117,7 +117,7 @@ All three policies see the same eligibility set and state. They do not see futur
 
 **Common failure model (applied identically to all policies):** at a failure timestamp, first finish any requests whose service-completion events occur at that exact time, per the event-order rule above. Mark the server unavailable so it receives no new dispatches. Fail every remaining in-flight request on that server immediately, count each as a failure drop, and release its slots; do not pause, migrate, or replay those requests after recovery. The shared FIFO queue contains unassigned requests, so it is unchanged by the failure and preserves its order. Requests in that queue remain subject to their original arrival-based deadlines and the common queue-overflow rule. At the configured recovery timestamp, mark the server healthy with all slots idle; dispatch any waiting queue head under the selected policy before admitting later arrivals at that timestamp. If every server is unavailable, continue queueing under the same limit and deadline rules.
 
-**Later Random Forest extension (not in the initial three-policy API):** it must be a separate model trained on simulated states, not the CIC-IDS2017 feature-selection evaluator. Before implementation, approve its observable input features, target labels, separate training/validation/test scenario seeds, tuning protocol, server-selection/fallback logic, inference timing, and comparison design. A reasonable research target to evaluate later is the eligible server with the lowest estimated completion time using only the current observable state and configured service-rate estimates; this is a simulated heuristic label, not real-world ground truth. Do not present this proposal as an implemented or finalized RF method.
+**Later Random Forest extension (not in the initial three-policy API):** it must be a separate model trained on simulated states, not the Workstream A feature-selection evaluator. Before implementation, approve its observable input features, target labels, separate training/validation/test scenario seeds, tuning protocol, server-selection/fallback logic, inference timing, and comparison design. A reasonable research target to evaluate later is the eligible server with the lowest estimated completion time using only the current observable state and configured service-rate estimates; this is a simulated heuristic label, not real-world ground truth. Do not present this proposal as an implemented or finalized RF method.
 
 GA, BPSO, and ACO are out of initial Study B scope. The optimization objective, rolling planning design, and optimizer settings from the superseded seven-policy draft do not apply to this initial traditional-policy comparison. Their feature-selection use in Study A is unchanged.
 
@@ -178,46 +178,82 @@ Every run records a unique experiment ID, timestamp, seeds, full configuration, 
 
 For Study B's 10 paired scenario replications, report per-policy mean and standard deviation and paired per-scenario differences. Report 95% percentile bootstrap intervals from 10,000 resamples of the scenario-level paired units, using a deterministic bootstrap RNG derived from the master seed. Resample whole scenario rows so the three policies remain paired. State the method and sample count. Requests within one simulation run are not independent experimental replications. Treat the 10-seed interval as uncertainty across these simulated scenarios, not as evidence about physical networks. For Study A, use seed-level or split-level units appropriate to that design; one held-out test score is not evidence of repeatability across datasets.
 
-No experimental result is present in this document. Claims of improvement require held-out or paired repeated results and disclosed uncertainty.
+Study A development results are reported in Section 7 and remain limited by the documented sample and provenance constraints. No Study B performance results are reported here. Any performance claim requires appropriate held-out or paired repeated results with disclosed uncertainty.
 
 ## 5. Decisions made
 
-* The project has two independent studies and must label real CIC-IDS2017 classification separately from simulated network metrics.
-* Study A uses GA, binary PSO, ACO, and a full-feature baseline with a common Random Forest evaluator.
-* Study A's primary score is macro-F1; supporting scores include accuracy, macro precision/recall/F1, weighted precision/recall/F1, and confusion matrix.
-* Initial Study A fitness weights are 0.8 validation macro-F1 loss and 0.2 selected-feature fraction; lower is better and weights remain configurable.
-* Empty masks are invalid, repaired to a feasible non-empty mask, and otherwise penalized at fitness 1.0. Default mask bounds are 1 through all eligible features.
-* Split precedes fitted preprocessing; train-only fitting; test is sealed until decisions are frozen; scaling is omitted unless required by a changed method.
-* Planned split targets are 60/20/20 with group-aware assignment preferred and an explicitly labeled stratified random fallback if grouping cannot be supported.
-* Selector comparisons use a common maximum RF evaluation budget; record fit counts and separate optimizer, RF evaluation, preprocessing, and end-to-end times.
-* Planned stochastic repetition default is 10 seeds per feature optimizer; reductions are documented as limitations.
-* Study B v1 compares Round Robin, Least Connections, and capacity-aware Weighted Load Balancing. Weighted is the minimum estimated outstanding work divided by effective server capacity, with seeded deterministic tie-breaking; this explicitly supersedes the older weighted-random draft definition.
-* Study B v1 excludes RF routing until its independent simulated training target and evaluation protocol are approved. GA, BPSO, and ACO remain Study A feature selectors and are not initial routing policies.
-* Study B uses a shared FIFO queue, exponential service-demand default, server slot/rate configuration, and explicit failure/recovery events; the default fleet, workload rates, warm-up/drain, deadline, queue bound, and canonical recovery scenario are listed in Section 3.5.
-* Stable arrivals are Poisson, increasing arrivals are linearly increasing non-homogeneous Poisson, and bursty arrivals alternate configured low/high Poisson rates.
-* Paired policy comparisons replay identical pre-generated arrivals, request IDs/attributes, service demands, server definitions, and failure schedules. Ten scenario replications derive reproducibly from master seed 42.
-* Metrics and denominators are defined in Section 3.4. Service utilization and CPU are simulated values/proxies; memory utilization is omitted without a memory model.
-* Simulation API contracts and the process-local cancellable run lifecycle are documented in Section 3.6 and implemented for local single-process use.
-* Run metadata, uncertainty, paired analysis, and separation of exploratory tuning/final evaluation are mandatory.
+* Workstream A uses CIC-IoT2023 for intrusion classification. Dataset selection is approved by the faculty/team; that approval does not verify local source provenance, schema, labels, or the run manifest.
+* Workstream A compares GA, BPSO, and ACO feature selection with one shared Random Forest evaluator and a full-feature baseline. These are classification methods and results, not routing policies or load-balancing evidence.
+* Workstream A's reported development sample is class-capped at 5,000 rows per folder. Folder-derived labels are not independently verified. The local source/schema mismatch and exact global duplicate count remain unresolved.
+* The Workstream A development run uses three selector seeds on one fixed seed-43 split; its results are preliminary and do not establish performance under raw corpus prevalence or across independent datasets/splits.
+* Study B is a discrete-event simulated load-balancing comparison with exactly three initial policies: Round Robin, Least Connections, and capacity-aware Weighted Load Balancing. RF routing is a later, separate model; GA, BPSO, and ACO remain outside the Study B routing scope.
+* Study B uses one shared FIFO queue, its documented server capacities and per-slot service rates, stable/increasing/bursty traffic, paired common traces, and the failure/recovery and event-order rules in Section 3. The complete defaults are in Section 3.5.
+* Study B metrics use the cohorts, windows, denominators, and empty-sample conventions in Section 3.4. Service utilization and CPU are simulated values/proxies; memory utilization is omitted without a memory model.
+* Study B API behavior follows the local process run lifecycle and endpoint contract in Section 3.6. Run records are process-local and do not survive application restart.
+* Cross-cutting provenance, reproducibility, and paired-analysis requirements are defined in Section 4.
 
 ## 6. Unresolved decisions and run blockers
 
 ### Dataset and Study A
 
-1. Exact CIC-IDS2017 source/provider, release/version, archive/file names, retrieval date, checksums, and actual schema.
-2. Verified target column and observed label mapping/canonical class names.
-3. Exact eligible columns and excluded columns with evidence/reasons after dataset audit; exact duplicate and deduplication policy.
-4. Whether reliable time/day/attack-scenario group fields exist in the chosen files; actual group-disjoint partition mapping and achieved row proportions/class coverage. If not, document evidence for the random-split fallback.
-5. RF hyperparameters, class-weight policy, RF random-state policy, zero-division behavior, and exact transformation choices after schema audit.
-6. Numeric GA/PSO/ACO parameters, initialization distributions, population sizes, operator rates, pheromone bounds, evaluation budget, early-stopping patience, and final number of repeats if not 10.
+1. Verify the exact provenance of the local CIC-IoT2023 files, including source package/acquisition path, release/version, checksums, and correspondence with the official source.
+2. Verify the local schema and determine whether its 39-feature, folder-organized layout corresponds to the source documentation; independently verify the folder-derived labels against row-level ground truth.
+3. Complete and preserve the full run manifest and source-verified audit. The available development sample and reported results remain preliminary until these checks are resolved.
+4. The full-corpus duplicate audit did not complete, so the exact global duplicate count remains unknown. Sample-scoped duplicate counts and retention policy are reported in Section 7 and the linked audits.
+5. The selector comparison uses three seeds on one fixed split. Additional independent splits and more selector seeds would be needed for broader repeatability claims.
 
 ### Simulation and Study B
 
-7. RF routing model only if added later: observable features, target generation, training/validation/test scenario counts and seeds, tuning protocol, classifier settings, fallback, and inference-time procedure.
-8. Whether a modeled memory proxy should be introduced later; v1 reports no memory percentage.
+6. Random Forest routing remains excluded from the initial three-policy simulator. Any later integration requires a separate simulated training target, observable feature definition, scenario-separated training/validation/test protocol, and evaluation plan.
+7. Memory utilization remains unavailable in v1 because the simulator has no memory resource model; do not report a memory percentage without an approved model.
 
 ### Cross-cutting
 
-9. Exact installed Python/package versions and artifact format/versioning. The initial skeleton declares bounded Python dependencies in `backend/pyproject.toml`; platform support beyond the documented local Windows setup remains to be verified.
+8. Record exact installed Python/package versions and artifact format/versioning for each reported run. Platform support beyond the documented local Windows setup remains to be verified.
 
-Items 1–6 block defensible Study A experiments. Study B v1 configuration defaults and metric rules are specified in Sections 3.0–3.6 for project-owner review; they must be accepted before Phase 2 implementation. Item 7 blocks any RF routing extension, not the three-policy traditional simulator. No implementation may claim physical network results.
+These open Study A verification items limit the interpretation of its development results; they do not change the approved dataset selection. Study B's documented v1 settings and three policies are implemented, while any additional routing model or resource metric requires a separate protocol change.
+
+## 7. Workstream A execution update — 2026-11-27
+
+The user explicitly requested a CIC-IoT2023 development sample and experiment. The faculty/team
+has since approved CIC-IoT2023 as the Workstream A dataset. That selection approval does not
+independently verify local-file provenance, schema, labels, or the run manifest.
+
+The subsequent provenance review is documented in
+[Workstream A provenance and ground-truth audit](https://github.com/bubksrit/comparitive-analysis/blob/main/docs/audits/cic_iot2023_provenance_and_ground_truth.md). It verifies the official CIC source
+page and 2023 paper, but finds no evidence that the local CSV bytes came directly from that
+source. The local `README_CSV.pdf` describes shuffled CSVs with a label feature, while the
+audited local tree contains category folders with 39 feature columns and project-derived
+labels. Thus the local folder taxonomy, including `Benign_Final` → `Benign`, is not verified
+against independent row-level ground truth. Existing classification results are preliminary
+and must be described as folder-labelled development-sample results.
+
+The latest exact global CIC-IoT2023 duplicate audit scanned all 46,776,700 raw rows, identified
+5,786,051 candidate rows and completed 5,390,828 full feature comparisons before stopping with
+`OperationalError: database is locked`.
+Its temporary index was cleaned up and no resumable checkpoint remains. No exact global count
+is available. The prepared 160,578-row sample has an exact sample-scoped audit: 2,524 repeated
+full records and 3,794 repeated eligible feature vectors, all retained. These counts do not
+estimate global totals. The 5,000-row-per-folder cap changes class prevalence, so sample accuracy
+does not estimate accuracy under the raw corpus class mix.
+
+The final three-seed experiment uses a fresh seed-43 split, separate from the exploratory
+seed-42 pilot split. It contains 96,305/32,175/32,098 train/validation/test rows, all 34 classes
+in every partition, and no overlap of identical eligible feature vectors. The frozen result
+and metrics are reported in [Workstream A research report](https://github.com/bubksrit/comparitive-analysis/blob/main/docs/WORKSTREAM_A_RESEARCH.md); artifacts and plots are under
+`outputs/cic-iot2023-final/`.
+
+The full-feature baseline has now been evaluated three times using the exact same RF settings
+as the selector runs, including fixed `random_state=42`, on the same sample and split. Its
+test macro-F1 was 0.6296 in all three seed-labelled repetitions (42/43/44); the seed labels do
+not alter the estimator's RNG. Baseline SD is 0 and no inferential CI is reported for identical
+deterministic repetitions.
+
+Mean test macro-F1 over three selector seeds was 0.5806 for GA, 0.6013 for BPSO, and 0.5771
+for ACO. Seed-aligned selector-minus-baseline differences were −0.0490 (95% CI −0.1018 to
+0.0037), −0.0283 (−0.0717 to 0.0151), and −0.0525 (−0.1390 to 0.0341), respectively. These
+Student-t intervals are conditional on the fixed split and RF random state, with only three
+selector seeds; they do not establish equivalence. The new comparison result, CSV, repeat
+manifest, and graphs are under `outputs/cic-iot2023-baseline-repeats/`. The original one-baseline
+result remains preserved under `outputs/cic-iot2023-final/`. These are classification results
+on a folder-labelled development sample, not load-balancer or production-network results.

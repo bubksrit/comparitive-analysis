@@ -1,0 +1,1817 @@
+{
+  "report_title": "CIC-IoT2023 local CSV dataset audit",
+  "audit_date": "2026-11-27",
+  "dataset_identity_verified": false,
+  "dataset_choice_approved": false,
+  "root_path": "<LOCAL_CIC_IOT2023_CSV_ROOT>",
+  "audit_method": {
+    "reader": "pandas.read_csv with bounded chunks",
+    "chunk_size_rows": 100000,
+    "schema_validation": "Exact ordered comparison with the user-observed 39-column header in backend/app/features/iot_loader.py",
+    "duplicate_check": "Within each individual 100,000-row chunk only; reported count is a lower bound. Duplicates across chunks or files were not checked.",
+    "labels": "Derived from immediate parent category folder by the project loader; binary mapping is Benign versus Attack. Labels were not independently verified against file-level ground truth.",
+    "source_document_note": "The local README_CSV.pdf was present but could not be extracted with available PDF tools. Official CIC dataset page describes 33 attacks in seven categories; this supports attack-name correspondence but not file-level label verification."
+  },
+  "environment": {
+    "python": "3.12.16",
+    "pandas": "2.3.3",
+    "numpy": "2.5.5"
+  },
+  "directory_count": 34,
+  "csv_file_count": 309,
+  "total_size_bytes": 8943771319,
+  "expected_columns": [
+    "Header_Length",
+    "Protocol Type",
+    "Time_To_Live",
+    "Rate",
+    "fin_flag_number",
+    "syn_flag_number",
+    "rst_flag_number",
+    "psh_flag_number",
+    "ack_flag_number",
+    "ece_flag_number",
+    "cwr_flag_number",
+    "ack_count",
+    "syn_count",
+    "fin_count",
+    "rst_count",
+    "HTTP",
+    "HTTPS",
+    "DNS",
+    "Telnet",
+    "SMTP",
+    "SSH",
+    "IRC",
+    "TCP",
+    "UDP",
+    "DHCP",
+    "ARP",
+    "ICMP",
+    "IGMP",
+    "IPv",
+    "LLC",
+    "Tot sum",
+    "Min",
+    "Max",
+    "AVG",
+    "Std",
+    "Tot size",
+    "IAT",
+    "Number",
+    "Variance"
+  ],
+  "schema_mismatch_count": 0,
+  "schema_mismatches": [],
+  "rows_by_folder": {
+    "Backdoor_Malware": 3218,
+    "Benign_Final": 1098191,
+    "BrowserHijacking": 5859,
+    "CommandInjection": 5409,
+    "DDoS-ACK_Fragmentation": 285075,
+    "DDoS-HTTP_Flood": 28790,
+    "DDoS-ICMP_Flood": 7200501,
+    "DDoS-ICMP_Fragmentation": 452490,
+    "DDoS-PSHACK_FLOOD": 4094772,
+    "DDoS-RSTFINFLOOD": 4045279,
+    "DDoS-SYN_Flood": 4059179,
+    "DDoS-SlowLoris": 23426,
+    "DDoS-SynonymousIP_Flood": 3598133,
+    "DDoS-TCP_Flood": 4497649,
+    "DDoS-UDP_Flood": 5412231,
+    "DDoS-UDP_Fragmentation": 286925,
+    "DNS_Spoofing": 178898,
+    "DictionaryBruteForce": 13064,
+    "DoS-HTTP_Flood": 71861,
+    "DoS-SYN_Flood": 2028836,
+    "DoS-TCP_Flood": 2671430,
+    "DoS-UDP_Flood": 3072993,
+    "MITM-ArpSpoofing": 307560,
+    "Mirai-greeth_flood": 991834,
+    "Mirai-greip_flood": 751646,
+    "Mirai-udpplain": 890574,
+    "Recon-HostDiscovery": 134378,
+    "Recon-OSScan": 98259,
+    "Recon-PingSweep": 2262,
+    "Recon-PortScan": 82284,
+    "SqlInjection": 5245,
+    "Uploading_Attack": 1252,
+    "VulnerabilityScan": 373351,
+    "XSS": 3846
+  },
+  "multiclass_counts_folder_derived": {
+    "Backdoor_Malware": 3218,
+    "Benign": 1098191,
+    "BrowserHijacking": 5859,
+    "CommandInjection": 5409,
+    "DDoS-ACK_Fragmentation": 285075,
+    "DDoS-HTTP_Flood": 28790,
+    "DDoS-ICMP_Flood": 7200501,
+    "DDoS-ICMP_Fragmentation": 452490,
+    "DDoS-PSHACK_FLOOD": 4094772,
+    "DDoS-RSTFINFLOOD": 4045279,
+    "DDoS-SYN_Flood": 4059179,
+    "DDoS-SlowLoris": 23426,
+    "DDoS-SynonymousIP_Flood": 3598133,
+    "DDoS-TCP_Flood": 4497649,
+    "DDoS-UDP_Flood": 5412231,
+    "DDoS-UDP_Fragmentation": 286925,
+    "DNS_Spoofing": 178898,
+    "DictionaryBruteForce": 13064,
+    "DoS-HTTP_Flood": 71861,
+    "DoS-SYN_Flood": 2028836,
+    "DoS-TCP_Flood": 2671430,
+    "DoS-UDP_Flood": 3072993,
+    "MITM-ArpSpoofing": 307560,
+    "Mirai-greeth_flood": 991834,
+    "Mirai-greip_flood": 751646,
+    "Mirai-udpplain": 890574,
+    "Recon-HostDiscovery": 134378,
+    "Recon-OSScan": 98259,
+    "Recon-PingSweep": 2262,
+    "Recon-PortScan": 82284,
+    "SqlInjection": 5245,
+    "Uploading_Attack": 1252,
+    "VulnerabilityScan": 373351,
+    "XSS": 3846
+  },
+  "binary_counts_folder_derived": {
+    "Attack": 45678509,
+    "Benign": 1098191
+  },
+  "total_rows": 46776700,
+  "missing_values_by_column": {
+    "ARP": 1,
+    "AVG": 2,
+    "DHCP": 1,
+    "DNS": 1,
+    "HTTP": 1,
+    "HTTPS": 1,
+    "Header_Length": 0,
+    "IAT": 3,
+    "ICMP": 1,
+    "IGMP": 1,
+    "IPv": 1,
+    "IRC": 1,
+    "LLC": 1,
+    "Max": 1,
+    "Min": 1,
+    "Number": 3,
+    "Protocol Type": 0,
+    "Rate": 0,
+    "SMTP": 1,
+    "SSH": 1,
+    "Std": 704,
+    "TCP": 1,
+    "Telnet": 1,
+    "Time_To_Live": 0,
+    "Tot size": 3,
+    "Tot sum": 1,
+    "UDP": 1,
+    "Variance": 705,
+    "ack_count": 1,
+    "ack_flag_number": 1,
+    "cwr_flag_number": 1,
+    "ece_flag_number": 1,
+    "fin_count": 1,
+    "fin_flag_number": 1,
+    "psh_flag_number": 1,
+    "rst_count": 1,
+    "rst_flag_number": 1,
+    "syn_count": 1,
+    "syn_flag_number": 1
+  },
+  "infinities_by_column": {
+    "ARP": 0,
+    "AVG": 0,
+    "DHCP": 0,
+    "DNS": 0,
+    "HTTP": 0,
+    "HTTPS": 0,
+    "Header_Length": 0,
+    "IAT": 0,
+    "ICMP": 0,
+    "IGMP": 0,
+    "IPv": 0,
+    "IRC": 0,
+    "LLC": 0,
+    "Max": 0,
+    "Min": 0,
+    "Number": 0,
+    "Protocol Type": 0,
+    "Rate": 1037,
+    "SMTP": 0,
+    "SSH": 0,
+    "Std": 0,
+    "TCP": 0,
+    "Telnet": 0,
+    "Time_To_Live": 0,
+    "Tot size": 0,
+    "Tot sum": 0,
+    "UDP": 0,
+    "Variance": 0,
+    "ack_count": 0,
+    "ack_flag_number": 0,
+    "cwr_flag_number": 0,
+    "ece_flag_number": 0,
+    "fin_count": 0,
+    "fin_flag_number": 0,
+    "psh_flag_number": 0,
+    "rst_count": 0,
+    "rst_flag_number": 0,
+    "syn_count": 0,
+    "syn_flag_number": 0
+  },
+  "non_numeric_parse_errors_by_column": {
+    "ARP": 0,
+    "AVG": 0,
+    "DHCP": 0,
+    "DNS": 0,
+    "HTTP": 0,
+    "HTTPS": 0,
+    "Header_Length": 0,
+    "IAT": 0,
+    "ICMP": 0,
+    "IGMP": 0,
+    "IPv": 0,
+    "IRC": 0,
+    "LLC": 0,
+    "Max": 0,
+    "Min": 0,
+    "Number": 0,
+    "Protocol Type": 0,
+    "Rate": 0,
+    "SMTP": 0,
+    "SSH": 0,
+    "Std": 0,
+    "TCP": 0,
+    "Telnet": 0,
+    "Time_To_Live": 0,
+    "Tot size": 0,
+    "Tot sum": 0,
+    "UDP": 0,
+    "Variance": 0,
+    "ack_count": 0,
+    "ack_flag_number": 0,
+    "cwr_flag_number": 0,
+    "ece_flag_number": 0,
+    "fin_count": 0,
+    "fin_flag_number": 0,
+    "psh_flag_number": 0,
+    "rst_count": 0,
+    "rst_flag_number": 0,
+    "syn_count": 0,
+    "syn_flag_number": 0
+  },
+  "duplicate_rows_within_chunks_lower_bound": 13711870,
+  "zero_row_files": [],
+  "scan_errors": [],
+  "elapsed_seconds": 235.73,
+  "files": [
+    {
+      "file": "Backdoor_Malware/Backdoor_Malware.pcap.csv",
+      "size_bytes": 664577,
+      "folder": "Backdoor_Malware"
+    },
+    {
+      "file": "Benign_Final/BenignTraffic.pcap.csv",
+      "size_bytes": 75100977,
+      "folder": "Benign_Final"
+    },
+    {
+      "file": "Benign_Final/BenignTraffic1.pcap.csv",
+      "size_bytes": 61260813,
+      "folder": "Benign_Final"
+    },
+    {
+      "file": "Benign_Final/BenignTraffic2.pcap.csv",
+      "size_bytes": 64200745,
+      "folder": "Benign_Final"
+    },
+    {
+      "file": "Benign_Final/BenignTraffic3.pcap.csv",
+      "size_bytes": 26851364,
+      "folder": "Benign_Final"
+    },
+    {
+      "file": "BrowserHijacking/BrowserHijacking.pcap.csv",
+      "size_bytes": 1207500,
+      "folder": "BrowserHijacking"
+    },
+    {
+      "file": "CommandInjection/CommandInjection.pcap.csv",
+      "size_bytes": 1107913,
+      "folder": "CommandInjection"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation.pcap.csv",
+      "size_bytes": 5530254,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation1.pcap.csv",
+      "size_bytes": 4944205,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation10.pcap.csv",
+      "size_bytes": 5015945,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation11.pcap.csv",
+      "size_bytes": 5008522,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation12.pcap.csv",
+      "size_bytes": 2099587,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation2.pcap.csv",
+      "size_bytes": 4976425,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation3.pcap.csv",
+      "size_bytes": 5035034,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation4.pcap.csv",
+      "size_bytes": 4946356,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation5.pcap.csv",
+      "size_bytes": 4801947,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation6.pcap.csv",
+      "size_bytes": 4852412,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation7.pcap.csv",
+      "size_bytes": 4898374,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation8.pcap.csv",
+      "size_bytes": 4933846,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-ACK_Fragmentation/DDoS-ACK_Fragmentation9.pcap.csv",
+      "size_bytes": 5734938,
+      "folder": "DDoS-ACK_Fragmentation"
+    },
+    {
+      "file": "DDoS-HTTP_Flood/DDoS-HTTP_Flood-.pcap.csv",
+      "size_bytes": 6449785,
+      "folder": "DDoS-HTTP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood.pcap.csv",
+      "size_bytes": 49629237,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood1.pcap.csv",
+      "size_bytes": 49499929,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood10.pcap.csv",
+      "size_bytes": 49550267,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood11.pcap.csv",
+      "size_bytes": 49550761,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood12.pcap.csv",
+      "size_bytes": 49442023,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood13.pcap.csv",
+      "size_bytes": 49140896,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood14.pcap.csv",
+      "size_bytes": 49230229,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood15.pcap.csv",
+      "size_bytes": 48726461,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood16.pcap.csv",
+      "size_bytes": 46172166,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood17.pcap.csv",
+      "size_bytes": 49070655,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood18.pcap.csv",
+      "size_bytes": 49173006,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood19.pcap.csv",
+      "size_bytes": 49463881,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood2.pcap.csv",
+      "size_bytes": 48959577,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood20.pcap.csv",
+      "size_bytes": 48926723,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood21.pcap.csv",
+      "size_bytes": 49445804,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood22.pcap.csv",
+      "size_bytes": 48942961,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood23.pcap.csv",
+      "size_bytes": 49153368,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood24.pcap.csv",
+      "size_bytes": 48897469,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood25.pcap.csv",
+      "size_bytes": 49439635,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood26.pcap.csv",
+      "size_bytes": 49230142,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood3.pcap.csv",
+      "size_bytes": 48556977,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood4.pcap.csv",
+      "size_bytes": 49808959,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood5.pcap.csv",
+      "size_bytes": 49339745,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood6.pcap.csv",
+      "size_bytes": 49112212,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood7.pcap.csv",
+      "size_bytes": 48900510,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood8.pcap.csv",
+      "size_bytes": 49495438,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Flood/DDoS-ICMP_Flood9.pcap.csv",
+      "size_bytes": 49409485,
+      "folder": "DDoS-ICMP_Flood"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation.pcap.csv",
+      "size_bytes": 4576351,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation1.pcap.csv",
+      "size_bytes": 4982951,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation10.pcap.csv",
+      "size_bytes": 5018987,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation11.pcap.csv",
+      "size_bytes": 4955238,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation12.pcap.csv",
+      "size_bytes": 5065621,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation13.pcap.csv",
+      "size_bytes": 4969932,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation14.pcap.csv",
+      "size_bytes": 4997768,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation15.pcap.csv",
+      "size_bytes": 4858713,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation16.pcap.csv",
+      "size_bytes": 5077350,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation17.pcap.csv",
+      "size_bytes": 5593541,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation18.pcap.csv",
+      "size_bytes": 4940788,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation19.pcap.csv",
+      "size_bytes": 4362588,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation2.pcap.csv",
+      "size_bytes": 4982201,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation3.pcap.csv",
+      "size_bytes": 5183591,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation4.pcap.csv",
+      "size_bytes": 5233326,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation5.pcap.csv",
+      "size_bytes": 4929636,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation6.pcap.csv",
+      "size_bytes": 4897727,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation7.pcap.csv",
+      "size_bytes": 4998932,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation8.pcap.csv",
+      "size_bytes": 4937216,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-ICMP_Fragmentation/DDoS-ICMP_Fragmentation9.pcap.csv",
+      "size_bytes": 5153022,
+      "folder": "DDoS-ICMP_Fragmentation"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood.pcap.csv",
+      "size_bytes": 50374556,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood1.pcap.csv",
+      "size_bytes": 50173173,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood10.pcap.csv",
+      "size_bytes": 50122091,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood11.pcap.csv",
+      "size_bytes": 50168393,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood12.pcap.csv",
+      "size_bytes": 50065205,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood13.pcap.csv",
+      "size_bytes": 50212437,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood14.pcap.csv",
+      "size_bytes": 50253946,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood15.pcap.csv",
+      "size_bytes": 14866707,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood2.pcap.csv",
+      "size_bytes": 50666840,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood3.pcap.csv",
+      "size_bytes": 50567791,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood4.pcap.csv",
+      "size_bytes": 50498677,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood5.pcap.csv",
+      "size_bytes": 50544736,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood6.pcap.csv",
+      "size_bytes": 50555376,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood7.pcap.csv",
+      "size_bytes": 50450917,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood8.pcap.csv",
+      "size_bytes": 50439194,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-PSHACK_FLOOD/DDoS-PSHACK_Flood9.pcap.csv",
+      "size_bytes": 49597219,
+      "folder": "DDoS-PSHACK_FLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood.pcap.csv",
+      "size_bytes": 50843571,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood1.pcap.csv",
+      "size_bytes": 50257848,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood10.pcap.csv",
+      "size_bytes": 50812193,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood11.pcap.csv",
+      "size_bytes": 50492558,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood12.pcap.csv",
+      "size_bytes": 50536714,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood13.pcap.csv",
+      "size_bytes": 50720180,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood14.pcap.csv",
+      "size_bytes": 50771519,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood15.pcap.csv",
+      "size_bytes": 11732085,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood2.pcap.csv",
+      "size_bytes": 50519470,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood3.pcap.csv",
+      "size_bytes": 50543359,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood4.pcap.csv",
+      "size_bytes": 50870304,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood5.pcap.csv",
+      "size_bytes": 50999323,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood6.pcap.csv",
+      "size_bytes": 46125154,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood7.pcap.csv",
+      "size_bytes": 50532403,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood8.pcap.csv",
+      "size_bytes": 50612474,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-RSTFINFLOOD/DDoS-RSTFINFlood9.pcap.csv",
+      "size_bytes": 50632289,
+      "folder": "DDoS-RSTFINFLOOD"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood.pcap.csv",
+      "size_bytes": 51108638,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood1.pcap.csv",
+      "size_bytes": 51023102,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood10.pcap.csv",
+      "size_bytes": 50881658,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood11.pcap.csv",
+      "size_bytes": 50551155,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood12.pcap.csv",
+      "size_bytes": 50926355,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood13.pcap.csv",
+      "size_bytes": 50869969,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood14.pcap.csv",
+      "size_bytes": 50380963,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood15.pcap.csv",
+      "size_bytes": 26009693,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood2.pcap.csv",
+      "size_bytes": 50841893,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood3.pcap.csv",
+      "size_bytes": 50687752,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood4.pcap.csv",
+      "size_bytes": 38728063,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood5.pcap.csv",
+      "size_bytes": 50530644,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood6.pcap.csv",
+      "size_bytes": 50719359,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood7.pcap.csv",
+      "size_bytes": 50413362,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood8.pcap.csv",
+      "size_bytes": 50031206,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SYN_Flood/DDoS-SYN_Flood9.pcap.csv",
+      "size_bytes": 50601708,
+      "folder": "DDoS-SYN_Flood"
+    },
+    {
+      "file": "DDoS-SlowLoris/DDoS-SlowLoris.pcap.csv",
+      "size_bytes": 5224322,
+      "folder": "DDoS-SlowLoris"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood.pcap.csv",
+      "size_bytes": 50046999,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood1.pcap.csv",
+      "size_bytes": 50266850,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood10.pcap.csv",
+      "size_bytes": 49796886,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood11.pcap.csv",
+      "size_bytes": 50313881,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood12.pcap.csv",
+      "size_bytes": 50266780,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood13.pcap.csv",
+      "size_bytes": 23850442,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood2.pcap.csv",
+      "size_bytes": 50276958,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood3.pcap.csv",
+      "size_bytes": 50253134,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood4.pcap.csv",
+      "size_bytes": 50363699,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood5.pcap.csv",
+      "size_bytes": 49573207,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood6.pcap.csv",
+      "size_bytes": 49205678,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood7.pcap.csv",
+      "size_bytes": 50414449,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood8.pcap.csv",
+      "size_bytes": 50410503,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-SynonymousIP_Flood/DDoS-SynonymousIP_Flood9.pcap.csv",
+      "size_bytes": 49595474,
+      "folder": "DDoS-SynonymousIP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood.pcap.csv",
+      "size_bytes": 49564789,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood1.pcap.csv",
+      "size_bytes": 50150587,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood10.pcap.csv",
+      "size_bytes": 49634604,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood11.pcap.csv",
+      "size_bytes": 48625905,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood12.pcap.csv",
+      "size_bytes": 50205770,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood13.pcap.csv",
+      "size_bytes": 50190203,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood14.pcap.csv",
+      "size_bytes": 49762919,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood15.pcap.csv",
+      "size_bytes": 50166316,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood16.pcap.csv",
+      "size_bytes": 50291457,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood17.pcap.csv",
+      "size_bytes": 17415966,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood2.pcap.csv",
+      "size_bytes": 49969827,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood3.pcap.csv",
+      "size_bytes": 50156811,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood4.pcap.csv",
+      "size_bytes": 37236055,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood5.pcap.csv",
+      "size_bytes": 40739425,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood6.pcap.csv",
+      "size_bytes": 49392507,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood7.pcap.csv",
+      "size_bytes": 50308010,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood8.pcap.csv",
+      "size_bytes": 50166032,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-TCP_Flood/DDoS-TCP_Flood9.pcap.csv",
+      "size_bytes": 49858930,
+      "folder": "DDoS-TCP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood.pcap.csv",
+      "size_bytes": 50078606,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood1.pcap.csv",
+      "size_bytes": 50050717,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood10.pcap.csv",
+      "size_bytes": 49931523,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood11.pcap.csv",
+      "size_bytes": 50330292,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood12.pcap.csv",
+      "size_bytes": 50059443,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood13.pcap.csv",
+      "size_bytes": 50174989,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood14.pcap.csv",
+      "size_bytes": 50665381,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood15.pcap.csv",
+      "size_bytes": 50126206,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood16.pcap.csv",
+      "size_bytes": 50246975,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood17.pcap.csv",
+      "size_bytes": 50005983,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood18.pcap.csv",
+      "size_bytes": 50262306,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood19.pcap.csv",
+      "size_bytes": 50157093,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood2.pcap.csv",
+      "size_bytes": 50157205,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood20.pcap.csv",
+      "size_bytes": 14617665,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood3.pcap.csv",
+      "size_bytes": 50333116,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood4.pcap.csv",
+      "size_bytes": 49939911,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood5.pcap.csv",
+      "size_bytes": 51930721,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood6.pcap.csv",
+      "size_bytes": 51470254,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood7.pcap.csv",
+      "size_bytes": 51907641,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood8.pcap.csv",
+      "size_bytes": 52049756,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Flood/DDoS-UDP_Flood9.pcap.csv",
+      "size_bytes": 50495757,
+      "folder": "DDoS-UDP_Flood"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation.pcap.csv",
+      "size_bytes": 4955669,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation1.pcap.csv",
+      "size_bytes": 4940834,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation10.pcap.csv",
+      "size_bytes": 4897636,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation11.pcap.csv",
+      "size_bytes": 5027497,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation12.pcap.csv",
+      "size_bytes": 3422745,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation2.pcap.csv",
+      "size_bytes": 4890806,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation3.pcap.csv",
+      "size_bytes": 5115153,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation4.pcap.csv",
+      "size_bytes": 4987718,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation5.pcap.csv",
+      "size_bytes": 5110522,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation6.pcap.csv",
+      "size_bytes": 4865869,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation7.pcap.csv",
+      "size_bytes": 4980427,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation8.pcap.csv",
+      "size_bytes": 4963244,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DDoS-UDP_Fragmentation/DDoS-UDP_Fragmentation9.pcap.csv",
+      "size_bytes": 4825124,
+      "folder": "DDoS-UDP_Fragmentation"
+    },
+    {
+      "file": "DNS_Spoofing/DNS_Spoofing.pcap.csv",
+      "size_bytes": 36833637,
+      "folder": "DNS_Spoofing"
+    },
+    {
+      "file": "DictionaryBruteForce/DictionaryBruteForce.pcap.csv",
+      "size_bytes": 2704325,
+      "folder": "DictionaryBruteForce"
+    },
+    {
+      "file": "DoS-HTTP_Flood/DoS-HTTP_Flood.pcap.csv",
+      "size_bytes": 9039877,
+      "folder": "DoS-HTTP_Flood"
+    },
+    {
+      "file": "DoS-HTTP_Flood/DoS-HTTP_Flood1.pcap.csv",
+      "size_bytes": 6883853,
+      "folder": "DoS-HTTP_Flood"
+    },
+    {
+      "file": "DoS-SYN_Flood/DoS-SYN_Flood.pcap.csv",
+      "size_bytes": 50831729,
+      "folder": "DoS-SYN_Flood"
+    },
+    {
+      "file": "DoS-SYN_Flood/DoS-SYN_Flood1.pcap.csv",
+      "size_bytes": 50601684,
+      "folder": "DoS-SYN_Flood"
+    },
+    {
+      "file": "DoS-SYN_Flood/DoS-SYN_Flood2.pcap.csv",
+      "size_bytes": 48877980,
+      "folder": "DoS-SYN_Flood"
+    },
+    {
+      "file": "DoS-SYN_Flood/DoS-SYN_Flood3.pcap.csv",
+      "size_bytes": 49424756,
+      "folder": "DoS-SYN_Flood"
+    },
+    {
+      "file": "DoS-SYN_Flood/DoS-SYN_Flood4.pcap.csv",
+      "size_bytes": 49736589,
+      "folder": "DoS-SYN_Flood"
+    },
+    {
+      "file": "DoS-SYN_Flood/DoS-SYN_Flood5.pcap.csv",
+      "size_bytes": 50831938,
+      "folder": "DoS-SYN_Flood"
+    },
+    {
+      "file": "DoS-SYN_Flood/DoS-SYN_Flood6.pcap.csv",
+      "size_bytes": 50423128,
+      "folder": "DoS-SYN_Flood"
+    },
+    {
+      "file": "DoS-SYN_Flood/DoS-SYN_Flood7.pcap.csv",
+      "size_bytes": 39878075,
+      "folder": "DoS-SYN_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood.pcap.csv",
+      "size_bytes": 48955460,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood1.pcap.csv",
+      "size_bytes": 47424362,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood10.pcap.csv",
+      "size_bytes": 15663327,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood2.pcap.csv",
+      "size_bytes": 50081317,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood3.pcap.csv",
+      "size_bytes": 50617348,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood4.pcap.csv",
+      "size_bytes": 50279393,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood5.pcap.csv",
+      "size_bytes": 50147553,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood6.pcap.csv",
+      "size_bytes": 49340641,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood7.pcap.csv",
+      "size_bytes": 49816215,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood8.pcap.csv",
+      "size_bytes": 48951443,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-TCP_Flood/DoS-TCP_Flood9.pcap.csv",
+      "size_bytes": 44070211,
+      "folder": "DoS-TCP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood.pcap.csv",
+      "size_bytes": 32359559,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood1.pcap.csv",
+      "size_bytes": 27576686,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood10.pcap.csv",
+      "size_bytes": 51347895,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood11.pcap.csv",
+      "size_bytes": 50201726,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood12.pcap.csv",
+      "size_bytes": 48098197,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood13.pcap.csv",
+      "size_bytes": 51656437,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood14.pcap.csv",
+      "size_bytes": 49019219,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood15.pcap.csv",
+      "size_bytes": 52351131,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood16.pcap.csv",
+      "size_bytes": 34512977,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood2.pcap.csv",
+      "size_bytes": 20474692,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood3.pcap.csv",
+      "size_bytes": 21532413,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood4.pcap.csv",
+      "size_bytes": 26190903,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood5.pcap.csv",
+      "size_bytes": 22634035,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood6.pcap.csv",
+      "size_bytes": 23871639,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood7.pcap.csv",
+      "size_bytes": 35696059,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood8.pcap.csv",
+      "size_bytes": 32624109,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "DoS-UDP_Flood/DoS-UDP_Flood9.pcap.csv",
+      "size_bytes": 25251429,
+      "folder": "DoS-UDP_Flood"
+    },
+    {
+      "file": "MITM-ArpSpoofing/MITM-ArpSpoofing.pcap.csv",
+      "size_bytes": 50593720,
+      "folder": "MITM-ArpSpoofing"
+    },
+    {
+      "file": "MITM-ArpSpoofing/MITM-ArpSpoofing1.pcap.csv",
+      "size_bytes": 12312129,
+      "folder": "MITM-ArpSpoofing"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood.pcap.csv",
+      "size_bytes": 6743677,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood1.pcap.csv",
+      "size_bytes": 6899287,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood10.pcap.csv",
+      "size_bytes": 7106174,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood11.pcap.csv",
+      "size_bytes": 7097244,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood12.pcap.csv",
+      "size_bytes": 7039185,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood13.pcap.csv",
+      "size_bytes": 7138032,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood14.pcap.csv",
+      "size_bytes": 6772502,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood15.pcap.csv",
+      "size_bytes": 6899264,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood16.pcap.csv",
+      "size_bytes": 6861619,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood17.pcap.csv",
+      "size_bytes": 6796981,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood18.pcap.csv",
+      "size_bytes": 6801605,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood19.pcap.csv",
+      "size_bytes": 6909182,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood2.pcap.csv",
+      "size_bytes": 6808690,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood20.pcap.csv",
+      "size_bytes": 6953239,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood21.pcap.csv",
+      "size_bytes": 7086127,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood22.pcap.csv",
+      "size_bytes": 6991213,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood23.pcap.csv",
+      "size_bytes": 6952155,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood24.pcap.csv",
+      "size_bytes": 6753823,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood25.pcap.csv",
+      "size_bytes": 6800333,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood26.pcap.csv",
+      "size_bytes": 7018295,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood27.pcap.csv",
+      "size_bytes": 6942289,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood28.pcap.csv",
+      "size_bytes": 6916207,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood3.pcap.csv",
+      "size_bytes": 6804724,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood4.pcap.csv",
+      "size_bytes": 6851691,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood5.pcap.csv",
+      "size_bytes": 6817261,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood6.pcap.csv",
+      "size_bytes": 6888069,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood7.pcap.csv",
+      "size_bytes": 6889051,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood8.pcap.csv",
+      "size_bytes": 6865224,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greeth_flood/Mirai-greeth_flood9.pcap.csv",
+      "size_bytes": 7251251,
+      "folder": "Mirai-greeth_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood.pcap.csv",
+      "size_bytes": 7247302,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood1.pcap.csv",
+      "size_bytes": 7176408,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood10.pcap.csv",
+      "size_bytes": 7135338,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood11.pcap.csv",
+      "size_bytes": 7012998,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood12.pcap.csv",
+      "size_bytes": 7134535,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood13.pcap.csv",
+      "size_bytes": 7122045,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood14.pcap.csv",
+      "size_bytes": 7213409,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood15.pcap.csv",
+      "size_bytes": 7138745,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood16.pcap.csv",
+      "size_bytes": 6908251,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood17.pcap.csv",
+      "size_bytes": 7416420,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood18.pcap.csv",
+      "size_bytes": 7045526,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood19.pcap.csv",
+      "size_bytes": 7154894,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood2.pcap.csv",
+      "size_bytes": 6985338,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood20.pcap.csv",
+      "size_bytes": 7186283,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood21.pcap.csv",
+      "size_bytes": 2422081,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood3.pcap.csv",
+      "size_bytes": 7183446,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood4.pcap.csv",
+      "size_bytes": 7392607,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood5.pcap.csv",
+      "size_bytes": 7312382,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood6.pcap.csv",
+      "size_bytes": 7539798,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood7.pcap.csv",
+      "size_bytes": 7369571,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood8.pcap.csv",
+      "size_bytes": 7430602,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-greip_flood/Mirai-greip_flood9.pcap.csv",
+      "size_bytes": 7131083,
+      "folder": "Mirai-greip_flood"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain.pcap.csv",
+      "size_bytes": 7371385,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain1.pcap.csv",
+      "size_bytes": 7393619,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain10.pcap.csv",
+      "size_bytes": 7389468,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain11.pcap.csv",
+      "size_bytes": 7135480,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain12.pcap.csv",
+      "size_bytes": 7164413,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain13.pcap.csv",
+      "size_bytes": 7281461,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain14.pcap.csv",
+      "size_bytes": 7290682,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain15.pcap.csv",
+      "size_bytes": 7232466,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain16.pcap.csv",
+      "size_bytes": 7246882,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain17.pcap.csv",
+      "size_bytes": 7320218,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain18.pcap.csv",
+      "size_bytes": 7235592,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain19.pcap.csv",
+      "size_bytes": 7280257,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain2.pcap.csv",
+      "size_bytes": 7284688,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain20.pcap.csv",
+      "size_bytes": 7316309,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain21.pcap.csv",
+      "size_bytes": 7357220,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain22.pcap.csv",
+      "size_bytes": 7433323,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain23.pcap.csv",
+      "size_bytes": 7326904,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain24.pcap.csv",
+      "size_bytes": 2976645,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain3.pcap.csv",
+      "size_bytes": 7450169,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain4.pcap.csv",
+      "size_bytes": 7247149,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain5.pcap.csv",
+      "size_bytes": 7421005,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain6.pcap.csv",
+      "size_bytes": 7383877,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain7.pcap.csv",
+      "size_bytes": 7466803,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain8.pcap.csv",
+      "size_bytes": 7490189,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Mirai-udpplain/Mirai-udpplain9.pcap.csv",
+      "size_bytes": 7602368,
+      "folder": "Mirai-udpplain"
+    },
+    {
+      "file": "Recon-HostDiscovery/Recon-HostDiscovery.pcap.csv",
+      "size_bytes": 26360058,
+      "folder": "Recon-HostDiscovery"
+    },
+    {
+      "file": "Recon-OSScan/Recon-OSScan.pcap.csv",
+      "size_bytes": 19880307,
+      "folder": "Recon-OSScan"
+    },
+    {
+      "file": "Recon-PingSweep/Recon-PingSweep.pcap.csv",
+      "size_bytes": 466700,
+      "folder": "Recon-PingSweep"
+    },
+    {
+      "file": "Recon-PortScan/Recon-PortScan.pcap.csv",
+      "size_bytes": 16412654,
+      "folder": "Recon-PortScan"
+    },
+    {
+      "file": "SqlInjection/SqlInjection.pcap.csv",
+      "size_bytes": 1087316,
+      "folder": "SqlInjection"
+    },
+    {
+      "file": "Uploading_Attack/Uploading_Attack.pcap.csv",
+      "size_bytes": 260216,
+      "folder": "Uploading_Attack"
+    },
+    {
+      "file": "VulnerabilityScan/VulnerabilityScan.pcap.csv",
+      "size_bytes": 77235466,
+      "folder": "VulnerabilityScan"
+    },
+    {
+      "file": "XSS/XSS.pcap.csv",
+      "size_bytes": 796883,
+      "folder": "XSS"
+    }
+  ]
+}
