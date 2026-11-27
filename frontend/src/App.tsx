@@ -1,129 +1,108 @@
 import { useEffect, useState } from "react";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import type { HealthResponse } from "./types/api";
+import { ConfigurationPanel } from "./features/simulation/ConfigurationPanel";
+import { defaultPolicies, defaultSimulationConfig } from "./features/simulation/defaults";
+import { ResultsDashboard } from "./features/simulation/ResultsDashboard";
+import { RunLifecyclePanel } from "./features/simulation/RunLifecyclePanel";
+import { useSimulationRun } from "./features/simulation/useSimulationRun";
+import { simulationApi } from "./services/simulationApi";
+import type { HealthResponse, SimulationConfig, SimulationPolicy } from "./types/api";
+
+type ApiHealth = "checking" | "online" | "offline";
 
 export default function App() {
-  const [health, setHealth] = useState<"checking" | "online" | "offline">("checking");
+  const [health, setHealth] = useState<ApiHealth>("checking");
+  const [config, setConfig] = useState<SimulationConfig>(() => structuredClone(defaultSimulationConfig));
+  const [policies, setPolicies] = useState<SimulationPolicy[]>([...defaultPolicies]);
+  const [replications, setReplications] = useState(10);
+  const lifecycle = useSimulationRun();
+  const busy =
+    lifecycle.submitting ||
+    lifecycle.run?.status === "queued" ||
+    lifecycle.run?.status === "running" ||
+    lifecycle.run?.status === "cancelling";
 
   useEffect(() => {
-    let active = true;
-    fetch("/api/v1/health")
-      .then((response) => {
-        if (!response.ok) throw new Error("API unavailable");
-        return response.json() as Promise<HealthResponse>;
-      })
-      .then((result) => {
-        if (active) setHealth(result.status === "ok" ? "online" : "offline");
-      })
+    const controller = new AbortController();
+    simulationApi
+      .health(controller.signal)
+      .then((result: HealthResponse) => setHealth(result.status === "ok" ? "online" : "offline"))
       .catch(() => {
-        if (active) setHealth("offline");
+        if (!controller.signal.aborted) setHealth("offline");
       });
-    return () => {
-      active = false;
-    };
+    return () => controller.abort();
   }, []);
 
+  const startRun = () => {
+    void lifecycle.start({ ...config, policies: [...policies], replications });
+  };
+
   return (
-    <main className="min-h-screen bg-mist text-ink">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+    <main className="app-shell">
+      <header className="topbar">
+        <div className="brand-lockup">
+          <div className="brand-mark" aria-hidden="true"><span /><span /><span /></div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">
-              Research workspace
-            </p>
-            <h1 className="mt-1 text-xl font-semibold">Intelligent Network Load Balancing</h1>
+            <p className="brand-kicker">Research workspace <span>·</span> Study B</p>
+            <h1>Simulated load balancing</h1>
           </div>
-          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-sm text-slate-600">
-            API {health}
-          </span>
         </div>
+        <div className={`api-health health-${health}`}><span className="status-dot" />API {health}</div>
       </header>
 
-      <div className="mx-auto max-w-6xl space-y-6 px-6 py-8">
-        <section className="grid gap-5 md:grid-cols-2">
-          <StudyCard
-            eyebrow="Study A · CIC-IDS2017"
-            title="Feature selection"
-            description="Real dataset classification with a shared Random Forest evaluator."
-            methods="Full-feature baseline · GA · Binary PSO · ACO"
-          />
-          <StudyCard
-            eyebrow="Study B · Discrete-event simulation"
-            title="Load balancing"
-            description="Compare routing policies on reproducible simulated traffic and server scenarios."
-            methods="Round Robin · Least Connections · Weighted · RF · GA · PSO · ACO"
-          />
-        </section>
-
-        <section className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="font-semibold">Experiment metrics</h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Results will appear after an experiment is implemented and run.
-                </p>
-              </div>
-              <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
-                No runs yet
-              </span>
-            </div>
-            <div className="mt-5 h-48" aria-label="Empty experiment chart">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={[]}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="run" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line dataKey="value" stroke="#0d9488" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-            <p className="text-center text-xs text-slate-400">No experimental data to plot</p>
-          </div>
-
-          <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="font-semibold">Research guardrails</h2>
-            <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-              <li>Test data stays sealed until model and feature choices are frozen.</li>
-              <li>Simulated routing metrics are not physical network measurements.</li>
-              <li>Every run should record its seed, configuration, and provenance.</li>
-            </ul>
-            <p className="mt-5 border-t border-slate-100 pt-4 text-xs text-slate-400">
-              Skeleton only · algorithms and experiment workflows are not implemented.
+      <div className="page-content">
+        <section className="hero-row">
+          <div>
+            <p className="hero-overline">Discrete-event experiment console</p>
+            <h2>Compare routing policies under paired traffic.</h2>
+            <p className="hero-description">
+              Configure a reproducible scenario, run the approved traditional policies, and inspect
+              measured simulation results.
             </p>
-          </aside>
+          </div>
+          <div className="hero-aside">
+            <div className="hero-aside-line"><span className="hero-number">03</span><span>Routing policies</span></div>
+            <div className="hero-policy-list">Round Robin <i /> Least Connections <i /> Weighted</div>
+          </div>
         </section>
+
+        <div className="workspace-grid">
+          <ConfigurationPanel
+            config={config}
+            setConfig={setConfig}
+            policies={policies}
+            setPolicies={setPolicies}
+            replications={replications}
+            setReplications={setReplications}
+            busy={Boolean(busy)}
+            onSubmit={startRun}
+          />
+          <div className="side-column">
+            <RunLifecyclePanel
+              run={lifecycle.run}
+              error={lifecycle.error}
+              submitting={lifecycle.submitting}
+              cancelling={lifecycle.cancelling}
+              loadingResults={lifecycle.loadingResults}
+              onCancel={() => void lifecycle.cancel()}
+              onRetryResults={lifecycle.retryResults}
+            />
+            <section className="guardrail-card">
+              <div className="guardrail-icon">i</div>
+              <div>
+                <strong>Simulation guardrails</strong>
+                <p>CPU is shown only as a simulated busy-slot proxy. Physical CPU and memory are not measured.</p>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        {lifecycle.results && <ResultsDashboard data={lifecycle.results} />}
+
+        <footer className="page-footer">
+          <span>Study B · simulated load balancing</span>
+          <span>Paired traces · seeded scenarios · local research API</span>
+        </footer>
       </div>
     </main>
-  );
-}
-
-function StudyCard({
-  eyebrow,
-  title,
-  description,
-  methods,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-  methods: string;
-}) {
-  return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-wide text-teal">{eyebrow}</p>
-      <h2 className="mt-3 text-lg font-semibold">{title}</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-      <p className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500">{methods}</p>
-    </section>
   );
 }
