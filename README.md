@@ -19,7 +19,7 @@ The GA, BPSO, and ACO selectors and unified runner are documented in [docs/GENET
 
 ## Workstream B: simulated network load balancing
 
-Workstream B is a separate research workstream focused on comparing routing policies using a discrete-event simulation. Its implementation and results are maintained separately from Workstream A. Its outputs are simulated measurements, not physical network measurements. The simulation protocol and unresolved decisions are recorded in docs/EXPERIMENTS.md.
+Workstream B is a separate research workstream focused on comparing routing policies using a discrete-event simulation. Its implementation and results are maintained separately from Workstream A. Its outputs are simulated measurements, not physical network measurements. The simulation protocol and unresolved decisions are recorded in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
 
 ## Prerequisites
 
