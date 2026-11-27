@@ -1,0 +1,44 @@
+{
+  "report_title": "CIC-IoT2023 exact global duplicate audit",
+  "audit_date": "2026-11-27",
+  "status": "not_run_insufficient_scratch_space",
+  "dataset_identity_verified": false,
+  "root_path": "<LOCAL_CIC_IOT2023_CSV_ROOT>",
+  "scratch_directory": "<LOCAL_AUDIT_SCRATCH_DIR>",
+  "csv_file_count": 309,
+  "expected_total_rows": 46776700,
+  "total_rows_scanned": 0,
+  "scratch_preflight": {
+    "available_bytes": 13648265216,
+    "required_bytes": 22452816000,
+    "shortfall_bytes": 8804550784,
+    "estimated_database_bytes_per_row": 400,
+    "headroom_factor": 1.2,
+    "safe_to_run": false
+  },
+  "methodology": {
+    "description": "CSV files are streamed in bounded pandas chunks into a temporary SQLite WITHOUT ROWID index. The index stores a vectorized 64-bit candidate fingerprint, the complete canonical 39-feature row, derived label, source file ID, and occurrence count. SQLite cache is capped and the temporary database is removed after reporting.",
+    "canonicalization": "All 39 features are parsed numerically and encoded as little-endian float64. NaNs are normalized to one canonical NaN value; positive and negative zero are normalized to zero; infinities retain their sign. The immediate parent folder is mapped with the project multiclass label rule (Benign_Final to Benign).",
+    "collision_safety": "A fingerprint match is only a candidate. Complete-row identity is keyed by the full canonical feature BLOB plus label ID and file ID in SQLite. Different canonical rows with the same fingerprint remain separate and are not counted as duplicates.",
+    "duplicate_definitions": "Complete-row identity includes all 39 canonical features and the folder-derived label. Duplicate occurrences are rows beyond the first within each full-row group. Within-file occurrences are excess copies within a source file; cross-file occurrences are additional represented source files. Conflicting-label groups share the full feature BLOB but have more than one derived label.",
+    "chunk_size_rows": 100000,
+    "hash": "pandas.util.hash_pandas_object 64-bit fingerprint; full canonical BLOB disambiguates collisions"
+  },
+  "exact_duplicate_occurrences": null,
+  "unique_duplicate_groups": null,
+  "duplicates_within_same_file_occurrences": null,
+  "duplicates_across_different_files_occurrences": null,
+  "duplicate_groups_within_same_file": null,
+  "duplicate_groups_across_different_files": null,
+  "conflicting_label_feature_groups": null,
+  "conflicting_label_feature_rows": null,
+  "fingerprint_collision_groups": null,
+  "per_class_duplicate_occurrences": null,
+  "limitations": [
+    "Folder-derived labels are provenance labels, not independently verified ground truth.",
+    "Duplicate rows are counted, not removed or altered.",
+    "No capture/session independence is inferred from file boundaries.",
+    "The SQLite index stores full canonical rows; scratch use can approach the preflight upper bound.",
+    "Scratch preflight failed; no CSV row contents were read and no temporary database was created."
+  ]
+}

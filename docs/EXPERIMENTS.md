@@ -123,7 +123,8 @@ Every run records a unique experiment ID, timestamp, seeds, full configuration, 
 
 For repeated runs report mean, standard deviation, and 95% confidence intervals where appropriate. State the interval method and sample count. For policies compared on shared traces, use paired per-scenario differences. Choose paired statistical tests only after checking the assumptions of the selected test (including difference distribution/independence); report effect estimates and intervals, not only p-values. Do not treat requests within one simulation run as independent experimental replications. For Study A, use seed-level or split-level units appropriate to the design; one held-out test score is not evidence of repeatability across datasets.
 
-No experimental result is present in this document. Claims of improvement require held-out or paired repeated results and disclosed uncertainty.
+Claims of improvement require held-out or paired repeated results and disclosed uncertainty.
+The CIC-IoT2023 development results are summarized in the execution update at the end of this file.
 
 ## 5. Decisions made
 
@@ -150,10 +151,10 @@ No experimental result is present in this document. Claims of improvement requir
 
 1. Exact CIC-IDS2017 source/provider, release/version, archive/file names, retrieval date, checksums, and actual schema.
 2. Verified target column and observed label mapping/canonical class names.
-3. Exact eligible columns and excluded columns with evidence/reasons after dataset audit; exact duplicate and deduplication policy.
-4. Whether reliable time/day/attack-scenario group fields exist in the chosen files; actual group-disjoint partition mapping and achieved row proportions/class coverage. If not, document evidence for the random-split fallback.
-5. RF hyperparameters, class-weight policy, RF random-state policy, zero-division behavior, and exact transformation choices after schema audit.
-6. Numeric GA/PSO/ACO parameters, initialization distributions, population sizes, operator rates, pheromone bounds, evaluation budget, early-stopping patience, and final number of repeats if not 10.
+3. CIC-IDS2017 eligible/excluded columns and exact duplicate policy remain unresolved. For the requested CIC-IoT2023 sample, retain all rows, report sample-scoped duplicates, and group identical eligible feature vectors together at split time; the global raw duplicate count is unavailable.
+4. CIC-IDS2017 capture/time metadata remain unverified. For the CIC-IoT2023 sample, identical eligible feature vectors are group-disjoint across splits; capture/session independence is not established.
+5. CIC-IDS2017 RF settings remain unselected. The CIC-IoT2023 development run uses the frozen config in `backend/config/cic-iot2023-final-experiment.json`.
+6. CIC-IDS2017 selector settings remain unselected. The CIC-IoT2023 development run uses equal 12-fit budgets and three seeds as recorded in that config.
 
 ### Simulation and Study B
 
@@ -168,4 +169,53 @@ No experimental result is present in this document. Claims of improvement requir
 12. Exact installed Python/package versions and artifact format/versioning. The initial skeleton declares bounded Python dependencies in `backend/pyproject.toml`; platform support beyond the documented local Windows setup remains to be verified.
 13. Confidence-interval and statistical-test procedures selected after the final experimental unit and sample size are established.
 
-Items 1–6 and 7–10 block defensible final experiments. Until resolved, implementation may be limited to isolated scaffolding and synthetic/unit examples, not a claimed CIC-IDS2017 or comparative evaluation.
+Items 1–6 still block a defensible CIC-IDS2017 run. A requested CIC-IoT2023 development-sample
+experiment has since been completed; see the Workstream A update below. It does not establish
+results for CIC-IDS2017 or production/load-balancing conditions. Items 7–10 still block final
+Study B experiments.
+
+## 7. Workstream A execution update — 2026-11-27
+
+The user explicitly requested a CIC-IoT2023 development sample and experiment. This authorizes
+that local development work; it does not independently verify source provenance or faculty
+approval, and it does not establish that CIC-IoT2023 replaces CIC-IDS2017 as the team's final
+dataset.
+
+The subsequent provenance review is documented in
+`docs/audits/cic_iot2023_provenance_and_ground_truth.md`. It verifies the official CIC source
+page and 2023 paper, but finds no evidence that the local CSV bytes came directly from that
+source. The local `README_CSV.pdf` describes shuffled CSVs with a label feature, while the
+audited local tree contains category folders with 39 feature columns and project-derived
+labels. Thus the local folder taxonomy, including `Benign_Final` → `Benign`, is not verified
+against independent row-level ground truth. Existing classification results are preliminary
+and must be described as folder-labelled development-sample results.
+
+The latest exact global CIC-IoT2023 duplicate audit scanned all 46,776,700 raw rows, identified
+5,786,051 candidate rows and completed 5,390,828 full feature comparisons before stopping with
+`OperationalError: database is locked`.
+Its temporary index was cleaned up and no resumable checkpoint remains. No exact global count
+is available. The prepared 160,578-row sample has an exact sample-scoped audit: 2,524 repeated
+full records and 3,794 repeated eligible feature vectors, all retained. These counts do not
+estimate global totals. The 5,000-row-per-folder cap changes class prevalence, so sample accuracy
+does not estimate accuracy under the raw corpus class mix.
+
+The final three-seed experiment uses a fresh seed-43 split, separate from the exploratory
+seed-42 pilot split. It contains 96,305/32,175/32,098 train/validation/test rows, all 34 classes
+in every partition, and no overlap of identical eligible feature vectors. The frozen result
+and metrics are reported in `docs/WORKSTREAM_A_RESEARCH.md`; artifacts and plots are under
+`outputs/cic-iot2023-final/`.
+
+The full-feature baseline has now been evaluated three times using the exact same RF settings
+as the selector runs, including fixed `random_state=42`, on the same sample and split. Its
+test macro-F1 was 0.6296 in all three seed-labelled repetitions (42/43/44); the seed labels do
+not alter the estimator's RNG. Baseline SD is 0 and no inferential CI is reported for identical
+deterministic repetitions.
+
+Mean test macro-F1 over three selector seeds was 0.5806 for GA, 0.6013 for BPSO, and 0.5771
+for ACO. Seed-aligned selector-minus-baseline differences were −0.0490 (95% CI −0.1018 to
+0.0037), −0.0283 (−0.0717 to 0.0151), and −0.0525 (−0.1390 to 0.0341), respectively. These
+Student-t intervals are conditional on the fixed split and RF random state, with only three
+selector seeds; they do not establish equivalence. The new comparison result, CSV, repeat
+manifest, and graphs are under `outputs/cic-iot2023-baseline-repeats/`. The original one-baseline
+result remains preserved under `outputs/cic-iot2023-final/`. These are classification results
+on a folder-labelled development sample, not load-balancer or production-network results.
