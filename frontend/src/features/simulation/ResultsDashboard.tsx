@@ -13,6 +13,7 @@ import type {
   SimulationResult,
   SimulationRunResultsResponse,
 } from "../../types/api";
+import { formatPolicyTimingMilliseconds } from "./policyTimingFormat.mjs";
 
 const palette: Record<SimulationPolicy, string> = {
   round_robin: "#52d6bd",
@@ -34,13 +35,13 @@ const latencyFields = [
 ] as const;
 
 const overheadFields = [
-  ["policy_decision_count", "Decision count", "decisions"],
-  ["policy_decision_wall_seconds", "Total overhead", "seconds"],
-  ["mean_policy_decision_wall_seconds", "Mean", "seconds"],
-  ["median_policy_decision_wall_seconds", "Median", "seconds"],
-  ["p95_policy_decision_wall_seconds", "P95", "seconds"],
-  ["p99_policy_decision_wall_seconds", "P99", "seconds"],
-  ["max_policy_decision_wall_seconds", "Maximum", "seconds"],
+  ["policy_decision_count", "Decision count", "count"],
+  ["policy_decision_wall_seconds", "Total overhead (ms)", "time"],
+  ["mean_policy_decision_wall_seconds", "Mean (ms)", "time"],
+  ["median_policy_decision_wall_seconds", "Median (ms)", "time"],
+  ["p95_policy_decision_wall_seconds", "P95 (ms)", "time"],
+  ["p99_policy_decision_wall_seconds", "P99 (ms)", "time"],
+  ["max_policy_decision_wall_seconds", "Maximum (ms)", "time"],
 ] as const;
 
 type Props = { data: SimulationRunResultsResponse };
@@ -289,7 +290,7 @@ export function ResultsDashboard({ data }: Props) {
 
       <div className="panel metric-table-wrap">
         <div className="panel-subheading">
-          <div><h3>Policy decision overhead</h3><p>Host wall-clock decision timing · seconds per run, averaged over replications</p></div>
+          <div><h3>Policy decision overhead</h3><p>Host wall-clock timing per run, averaged over replications. All timing values are shown in milliseconds.</p></div>
         </div>
         <div className="table-scroll">
           <table>
@@ -298,8 +299,12 @@ export function ResultsDashboard({ data }: Props) {
               {policies.map((policy) => (
                 <tr key={policy}>
                   <td><PolicyLabel policy={policy} /></td>
-                  {overheadFields.map(([key, , unit]) => (
-                    <td key={key}>{formatValue(summaryMean(data, policy, key), unit === "decisions" ? "" : "s")}</td>
+                  {overheadFields.map(([key, , kind]) => (
+                    <td key={key}>
+                      {kind === "count"
+                        ? formatValue(summaryMean(data, policy, key), "")
+                        : formatPolicyTimingMilliseconds(summaryMean(data, policy, key))}
+                    </td>
                   ))}
                 </tr>
               ))}
