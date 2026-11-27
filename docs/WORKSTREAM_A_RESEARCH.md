@@ -8,52 +8,28 @@
 ---
 
 > [!IMPORTANT]
-> This document describes the **CIC-IDS2017 or CIC-IoT2023 intrusion-detection classification study** (Study A).
-> These are labelled network-flow datasets collected in a controlled research environment.
-> They are **NOT** direct measurements of real server CPU utilisation or network load-balancer performance.
-> Do not present Study A results as evidence about production load-balancing behaviour.
+> The current Study A experiment uses **CIC-IoT2023** for intrusion classification. Older CIC-IDS2017 setup text below is historical template context; no CIC-IDS2017 experiment is established by the current evidence.
+> Study A is not direct measurement of real server CPU use or network load-balancer performance. Do not present its results as load-balancing evidence.
 
 ---
 
 ## 1. Datasets
 
-### 1.1 Original approved dataset — CIC-IDS2017
+### 1.1 Current dataset: CIC-IoT2023
 
-The project handover specifies **CIC-IDS2017** as the Study A dataset.
-
-| Property | Value |
-|---|---|
-| Full name | Canadian Institute for Cybersecurity Intrusion Detection System 2017 |
-| Source | https://www.unb.ca/cic/datasets/ids-2017.html |
-| Format | Labelled CSV network-flow feature files |
-| Download | Manual — see `docs/DATA_FOUNDATION.md` |
-| Label column | Configured in `backend/config/dataset.example.json` (must be verified from actual file) |
-
-CIC-IDS2017 must be **manually downloaded** from the official CIC page and placed in `data/raw/cicids2017/`.
-The audit will reject missing or mis-configured target columns.
-
-### 1.2 Alternative dataset — CIC-IoT2023
-
-> [!WARNING]
-> CIC-IoT2023 is a **different** dataset from CIC-IDS2017.
-> The original project handover specifies CIC-IDS2017.
-> CIC-IoT2023 may only be used as an alternative **after the dataset choice is explicitly confirmed**.
-> Never silently switch between the two pipelines.
-
-The current Workstream A handover explicitly requests a CIC-IoT2023 development sample and
-experiments. It is used here for that requested development and pilot work. This does not
-independently verify source provenance or faculty approval, and does not establish that
-CIC-IoT2023 replaces CIC-IDS2017 in the team's final study.
+CIC-IoT2023 is the final dataset choice for Workstream A, and the faculty/team has approved
+that choice. Approval is not technical verification of the local data. Exact source-package
+provenance, release identity, schema correspondence, labels, and the complete run manifest
+remain unresolved. No CIC-IDS2017 experiment is established by the current repository evidence;
+older CIC-IDS2017 setup instructions are historical template material, not the active protocol.
 
 | Property | Value |
 |---|---|
 | Full name | Canadian Institute for Cybersecurity IoT Dataset 2023 |
 | Source | https://www.unb.ca/cic/datasets/iotdataset-2023.html |
 | Local audited format | 309 CSV files across 34 category folders; 39 numeric feature columns each; labels derived by this project's loader |
-| Label strategy | Derived from parent folder name (e.g. `DDoS-ICMP_Flood/` → class `DDoS-ICMP_Flood`) |
-| Binary labels | `Benign` vs `Attack` |
-| Multiclass labels | One class per category folder (up to 34 classes) |
-
+| Label strategy | Derived from parent folder name (e.g. `DDoS-ICMP_Flood/` -> class `DDoS-ICMP_Flood`) |
+| Current experiment labels | Multiclass, one folder-derived class per category folder (34 classes) |
 #### CIC-IoT2023 label derivation
 
 In the local files, the saved audit found no raw label column. The project derives labels
@@ -120,13 +96,16 @@ The 5,000-row-per-folder cap changes the original class prevalence: large classe
 downsampled while folders with fewer than 5,000 rows remain at their full observed size. The
 results below describe this development sample, not the source dataset's natural class mix.
 
-The resulting split is 96,336 train / 32,139 validation / 32,103 test rows. All 34 labels
-appear in every partition, and identical eligible feature vectors have zero partition overlap.
-The split is group-disjoint for feature-vector identity only; it does not establish
-capture/session independence. The machine-readable split audit is in
-`outputs/cic-iot2023-development/audit.json`.
+An earlier version of this document recorded a split of 96,336 train / 32,139 validation /
+32,103 test rows. That count conflicts with the final split recorded in the handover and
+experiment protocol and is treated as stale/historical; the underlying earlier artifact is
+not available here to verify its role. The final reported split is 96,305 training, 32,175
+validation, and 32,098 test rows (seed 43). All 34 labels occur in each partition, and
+identical eligible feature vectors have no partition overlap. This establishes feature-vector
+group separation only, not capture/session independence. The final split audit is a local
+artifact and is absent from this repository checkout.
 
-Both datasets produce a machine-readable audit before any splitting or model fitting:
+The CIC-IoT2023 pipeline produces a machine-readable audit before splitting or model fitting:
 
 | Audit output | Description |
 |---|---|
@@ -201,7 +180,7 @@ The same `RandomForestClassifier` configuration is used for every evaluation (ba
 
 | Parameter | Value |
 |---|---|
-| `n_estimators` | 200 |
+| `n_estimators` | 50 |
 | `criterion` | gini |
 | `max_depth` | None |
 | `max_features` | sqrt |
@@ -393,7 +372,7 @@ to regenerate the figures without rerunning models.
 
 | Component | Seed mechanism |
 |---|---|
-| Data split | `config.random_seed` (default 42) |
+| Final data split | Seed 43; the sample row-selection seed is 42 |
 | Random Forest | `random_state=42` |
 | GA | Per-run `seed` from `seeds` list |
 | BPSO | Per-run `seed` from `seeds` list |
@@ -435,7 +414,7 @@ All metrics use `zero_division=0`. Class order is sorted and recorded in every r
 
 ## 11. Limitations and threats to validity
 
-1. **Dataset scope:** CIC-IDS2017 and CIC-IoT2023 are intrusion-detection datasets collected in controlled lab environments. Results cannot be directly generalised to production network conditions or server load-balancing scenarios.
+1. **Dataset scope:** The reported experiment uses a class-capped CIC-IoT2023 sample. Results cannot be directly generalized to production network conditions or server load-balancing scenarios.
 
 2. **Labelling/provenance:** Local targets are derived from folder names and have not been independently matched to row-level ground truth. The local README describes a different, label-bearing combined layout; exact source provenance and the `Benign_Final` mapping remain unresolved.
 
@@ -449,4 +428,4 @@ All metrics use `zero_division=0`. Class order is sorted and recorded in every r
 
 7. **Hardware dependence:** Timing results (optimizer time, RF evaluation time) are hardware-dependent and not portable across machines.
 
-8. **CIC-IDS2017 vs CIC-IoT2023 comparison:** The two datasets have different traffic profiles, attack categories, and feature schemas. Accuracy figures from one dataset cannot be directly compared to the other.
+8. **Documentation history:** Older CIC-IDS2017 setup text is not evidence of a CIC-IDS2017 run and must not be used to characterize the current Workstream A experiment.
