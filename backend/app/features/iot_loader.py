@@ -17,10 +17,8 @@ from the CSV content.  This module handles:
 
 IMPORTANT — dataset-choice notice
 ----------------------------------
-CIC-IoT2023 is a different dataset from CIC-IDS2017.  The original project
-handover specifies CIC-IDS2017.  This loader enables CIC-IoT2023 as an
-*alternative* only after the dataset choice has been explicitly confirmed.
-Never silently replace the CIC-IDS2017 pipeline with this one.
+CIC-IoT2023 is the approved dataset choice for Workstream A. Approval does not
+independently verify the exact local source, schema, or folder-derived labels.
 """
 
 from __future__ import annotations
@@ -375,10 +373,9 @@ def build_provenance_report(
     return {
         "dataset_name": "CIC-IoT2023",
         "dataset_note": dataset_note or (
-            "CIC-IoT2023 is a different dataset from CIC-IDS2017. "
-            "The original project handover specifies CIC-IDS2017. "
-            "CIC-IoT2023 has not been confirmed as an approved replacement and remains optional. "
-            "Labels are derived from parent folder names, not from a CSV column."
+            "CIC-IoT2023 is approved as the Workstream A dataset. This approval does not "
+            "independently verify local source provenance, schema, or labels. Labels are "
+            "derived from parent folder names, not from a CSV column."
         ),
         "source_url": "https://www.unb.ca/cic/datasets/iotdataset-2023.html",
         "root_path": str(root),
@@ -543,9 +540,7 @@ def write_cic_iot2023_audit(
         "# CIC-IoT2023 Dataset Audit",
         "",
         "> [!IMPORTANT]",
-        "> CIC-IoT2023 is a **different** dataset from CIC-IDS2017.",
-        "> The original project handover specifies CIC-IDS2017.",
-        "> CIC-IoT2023 has not been confirmed as an approved replacement and remains optional.",
+        "> CIC-IoT2023 is the approved Workstream A dataset; approval does not verify local source provenance, schema, or labels.",
         "> Labels are derived from parent folder names — there is no label column in the CSVs.",
         "",
         f"- **Root path:** `{p['root_path']}`",

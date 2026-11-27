@@ -17,6 +17,8 @@ export default function App() {
   const lifecycle = useSimulationRun();
   const busy =
     lifecycle.submitting ||
+    lifecycle.restoring ||
+    Boolean(lifecycle.restorationRunId) ||
     lifecycle.run?.status === "queued" ||
     lifecycle.run?.status === "running" ||
     lifecycle.run?.status === "cancelling";
@@ -83,8 +85,11 @@ export default function App() {
               submitting={lifecycle.submitting}
               cancelling={lifecycle.cancelling}
               loadingResults={lifecycle.loadingResults}
+              restoring={lifecycle.restoring}
+              restorationRunId={lifecycle.restorationRunId}
               onCancel={() => void lifecycle.cancel()}
               onRetryResults={lifecycle.retryResults}
+              onRetryRestore={lifecycle.retryRestore}
             />
             <section className="guardrail-card">
               <div className="guardrail-icon">i</div>

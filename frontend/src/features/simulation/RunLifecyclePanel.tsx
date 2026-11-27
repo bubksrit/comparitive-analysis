@@ -7,8 +7,11 @@ type Props = {
   submitting: boolean;
   cancelling: boolean;
   loadingResults: boolean;
+  restoring: boolean;
+  restorationRunId: string | null;
   onCancel: () => void;
   onRetryResults: () => void;
+  onRetryRestore: () => void;
 };
 
 const statusCopy: Record<string, string> = {
@@ -26,10 +29,13 @@ export function RunLifecyclePanel({
   submitting,
   cancelling,
   loadingResults,
+  restoring,
+  restorationRunId,
   onCancel,
   onRetryResults,
+  onRetryRestore,
 }: Props) {
-  const hasRunOrActivity = Boolean(run || submitting);
+  const hasRunOrActivity = Boolean(run || submitting || restoring || restorationRunId);
   const progressPercent = run
     ? Math.min(100, (run.progress.completed_policy_runs / run.progress.total_policy_runs) * 100)
     : 0;
@@ -49,6 +55,14 @@ export function RunLifecyclePanel({
           <div className="empty-icon">↗</div>
           <strong>Ready to simulate</strong>
           <p>Configure a paired experiment to start a background run.</p>
+        </div>
+      ) : restoring ? (
+        <div className="starting-state"><span className="spinner" /><span>Restoring the saved run from the APIâ€¦</span></div>
+      ) : restorationRunId ? (
+        <div className="empty-run-state">
+          <strong>Saved run needs reconnection</strong>
+          <p>Run ID <code>{restorationRunId}</code> is saved in this tab. The API could not be reached, so the dashboard is waiting to restore its status.</p>
+          <button className="secondary-button" type="button" onClick={onRetryRestore}>Retry connection</button>
         </div>
       ) : submitting ? (
         <div className="starting-state"><span className="spinner" /><span>Submitting configuration to the simulation API…</span></div>

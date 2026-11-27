@@ -302,8 +302,8 @@ def test_load_cic_iot2023_returns_foundation(tmp_path):
         "random_seed": 42,
         "method": "chunked random-priority sample",
     }
-    assert "CIC-IDS2017" in foundation.provenance["dataset_note"]  # Must warn about original dataset
-    assert "has not been confirmed" in foundation.provenance["dataset_note"]
+    assert "approved" in foundation.provenance["dataset_note"]
+    assert "does not independently verify" in foundation.provenance["dataset_note"]
 
 
 def test_load_cic_iot2023_provenance_has_all_required_keys(tmp_path):
@@ -345,8 +345,8 @@ def test_write_cic_iot2023_audit_creates_files(tmp_path):
     report = json.loads((output_dir / "cic-iot2023-audit.json").read_text())
     assert report["dataset_name"] == "CIC-IoT2023"
     md = (output_dir / "cic-iot2023-audit.md").read_text()
-    assert "CIC-IDS2017" in md  # Disclaimer must be present
-    assert "has not been confirmed" in md
+    assert "approved Workstream A dataset" in md
+    assert "does not verify local source provenance, schema, or labels" in md
 
 
 def test_loader_raises_when_root_is_missing(tmp_path):
