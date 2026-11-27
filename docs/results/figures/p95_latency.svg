@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="600.00" y="42.00" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#16283f" text-anchor="middle">P95 latency</text>
+<text x="600.00" y="72.00" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#526174" text-anchor="middle">Mean across exported replications; bars show exported 95% CIs · P95 latency (s)</text>
+<line x1="115" y1="515.00" x2="1140" y2="515.00" stroke="#e3e8ef" stroke-width="1"/>
+<text x="101.00" y="520.00" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#526174" text-anchor="end">0.0000</text>
+<line x1="115" y1="433.00" x2="1140" y2="433.00" stroke="#e3e8ef" stroke-width="1"/>
+<text x="101.00" y="438.00" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#526174" text-anchor="end">1.9051</text>
+<line x1="115" y1="351.00" x2="1140" y2="351.00" stroke="#e3e8ef" stroke-width="1"/>
+<text x="101.00" y="356.00" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#526174" text-anchor="end">3.8103</text>
+<line x1="115" y1="269.00" x2="1140" y2="269.00" stroke="#e3e8ef" stroke-width="1"/>
+<text x="101.00" y="274.00" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#526174" text-anchor="end">5.7154</text>
+<line x1="115" y1="187.00" x2="1140" y2="187.00" stroke="#e3e8ef" stroke-width="1"/>
+<text x="101.00" y="192.00" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#526174" text-anchor="end">7.6206</text>
+<line x1="115" y1="105.00" x2="1140" y2="105.00" stroke="#e3e8ef" stroke-width="1"/>
+<text x="101.00" y="110.00" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#526174" text-anchor="end">9.5257</text>
+<line x1="115" y1="105" x2="115" y2="515" stroke="#7a8797" stroke-width="1.5"/>
+<line x1="115" y1="515" x2="1140" y2="515" stroke="#7a8797" stroke-width="1.5"/>
+<text x="28" y="310.00" transform="rotate(-90 28 310.00)" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#243247" text-anchor="middle">P95 latency (s)</text>
+<line x1="219.12" y1="502.03" x2="219.12" y2="502.17" stroke="#2878B5" stroke-width="2"/>
+<line x1="212.12" y1="502.03" x2="226.12" y2="502.03" stroke="#2878B5" stroke-width="2"/>
+<line x1="212.12" y1="502.17" x2="226.12" y2="502.17" stroke="#2878B5" stroke-width="2"/>
+<circle cx="219.12" cy="502.10" r="6" fill="#2878B5" />
+<line x1="243.12" y1="502.03" x2="243.12" y2="502.18" stroke="#E07A1F" stroke-width="2"/>
+<line x1="236.12" y1="502.03" x2="250.12" y2="502.03" stroke="#E07A1F" stroke-width="2"/>
+<line x1="236.12" y1="502.18" x2="250.12" y2="502.18" stroke="#E07A1F" stroke-width="2"/>
+<rect x="237.12" y="496.10" width="12" height="12" fill="#E07A1F" />
+<line x1="267.12" y1="502.03" x2="267.12" y2="502.17" stroke="#218739" stroke-width="2"/>
+<line x1="260.12" y1="502.03" x2="274.12" y2="502.03" stroke="#218739" stroke-width="2"/>
+<line x1="260.12" y1="502.17" x2="274.12" y2="502.17" stroke="#218739" stroke-width="2"/>
+<polygon points="267.12,495.10 274.12,502.10 267.12,509.10 260.12,502.10" fill="#218739" />
+<text x="243.12" y="546.00" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#243247" text-anchor="middle">Stable</text>
+<line x1="475.38" y1="148.93" x2="475.38" y2="153.90" stroke="#2878B5" stroke-width="2"/>
+<line x1="468.38" y1="148.93" x2="482.38" y2="148.93" stroke="#2878B5" stroke-width="2"/>
+<line x1="468.38" y1="153.90" x2="482.38" y2="153.90" stroke="#2878B5" stroke-width="2"/>
+<circle cx="475.38" cy="151.36" r="6" fill="#2878B5" />
+<line x1="499.38" y1="148.97" x2="499.38" y2="153.98" stroke="#E07A1F" stroke-width="2"/>
+<line x1="492.38" y1="148.97" x2="506.38" y2="148.97" stroke="#E07A1F" stroke-width="2"/>
+<line x1="492.38" y1="153.98" x2="506.38" y2="153.98" stroke="#E07A1F" stroke-width="2"/>
+<rect x="493.38" y="145.36" width="12" height="12" fill="#E07A1F" />
+<line x1="523.38" y1="148.97" x2="523.38" y2="154.02" stroke="#218739" stroke-width="2"/>
+<line x1="516.38" y1="148.97" x2="530.38" y2="148.97" stroke="#218739" stroke-width="2"/>
+<line x1="516.38" y1="154.02" x2="530.38" y2="154.02" stroke="#218739" stroke-width="2"/>
+<polygon points="523.38,144.36 530.38,151.36 523.38,158.36 516.38,151.36" fill="#218739" />
+<text x="499.38" y="546.00" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#243247" text-anchor="middle">Increasing Traffic</text>
+<line x1="731.62" y1="501.89" x2="731.62" y2="502.06" stroke="#2878B5" stroke-width="2"/>
+<line x1="724.62" y1="501.89" x2="738.62" y2="501.89" stroke="#2878B5" stroke-width="2"/>
+<line x1="724.62" y1="502.06" x2="738.62" y2="502.06" stroke="#2878B5" stroke-width="2"/>
+<circle cx="731.62" cy="501.98" r="6" fill="#2878B5" />
+<line x1="755.62" y1="501.89" x2="755.62" y2="502.07" stroke="#E07A1F" stroke-width="2"/>
+<line x1="748.62" y1="501.89" x2="762.62" y2="501.89" stroke="#E07A1F" stroke-width="2"/>
+<line x1="748.62" y1="502.07" x2="762.62" y2="502.07" stroke="#E07A1F" stroke-width="2"/>
+<rect x="749.62" y="495.98" width="12" height="12" fill="#E07A1F" />
+<line x1="779.62" y1="501.89" x2="779.62" y2="502.07" stroke="#218739" stroke-width="2"/>
+<line x1="772.62" y1="501.89" x2="786.62" y2="501.89" stroke="#218739" stroke-width="2"/>
+<line x1="772.62" y1="502.07" x2="786.62" y2="502.07" stroke="#218739" stroke-width="2"/>
+<polygon points="779.62,494.98 786.62,501.98 779.62,508.98 772.62,501.98" fill="#218739" />
+<text x="755.62" y="546.00" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#243247" text-anchor="middle">Server Failure</text>
+<line x1="987.88" y1="354.65" x2="987.88" y2="361.68" stroke="#2878B5" stroke-width="2"/>
+<line x1="980.88" y1="354.65" x2="994.88" y2="354.65" stroke="#2878B5" stroke-width="2"/>
+<line x1="980.88" y1="361.68" x2="994.88" y2="361.68" stroke="#2878B5" stroke-width="2"/>
+<circle cx="987.88" cy="357.99" r="6" fill="#2878B5" />
+<line x1="1011.88" y1="354.68" x2="1011.88" y2="361.67" stroke="#E07A1F" stroke-width="2"/>
+<line x1="1004.88" y1="354.68" x2="1018.88" y2="354.68" stroke="#E07A1F" stroke-width="2"/>
+<line x1="1004.88" y1="361.67" x2="1018.88" y2="361.67" stroke="#E07A1F" stroke-width="2"/>
+<rect x="1005.88" y="351.99" width="12" height="12" fill="#E07A1F" />
+<line x1="1035.88" y1="354.58" x2="1035.88" y2="361.59" stroke="#218739" stroke-width="2"/>
+<line x1="1028.88" y1="354.58" x2="1042.88" y2="354.58" stroke="#218739" stroke-width="2"/>
+<line x1="1028.88" y1="361.59" x2="1042.88" y2="361.59" stroke="#218739" stroke-width="2"/>
+<polygon points="1035.88,350.99 1042.88,357.99 1035.88,364.99 1028.88,357.99" fill="#218739" />
+<text x="1011.88" y="546.00" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#243247" text-anchor="middle">Bursty</text>
+<circle cx="355.00" cy="615.00" r="6" fill="#2878B5" />
+<text x="373.00" y="620.00" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#243247" text-anchor="start">Round Robin</text>
+<rect x="594.00" y="609.00" width="12" height="12" fill="#E07A1F" />
+<text x="618.00" y="620.00" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#243247" text-anchor="start">Least Connections</text>
+<polygon points="845.00,608.00 852.00,615.00 845.00,622.00 838.00,615.00" fill="#218739" />
+<text x="863.00" y="620.00" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#243247" text-anchor="start">Weighted</text>
+</svg>
