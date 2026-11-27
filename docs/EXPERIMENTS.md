@@ -4,13 +4,13 @@
 
 ## 1. Study separation
 
-Study A uses real CIC-IDS2017 records for supervised classification. Study B uses a synthetic discrete-event model for routing. Study B does not replay CIC-IDS2017 as network traffic and does not measure a physical network. Every artifact and visualization must state its source as either `CIC-IDS2017 classification` or `simulated load balancing`.
+Study A uses CIC-IoT2023 for supervised classification. Study B uses a synthetic discrete-event model for routing. Study B does not replay CIC-IoT2023 as network traffic and does not measure a physical network. Every artifact and visualization must state its source as either `CIC-IoT2023 classification` or `simulated load balancing`.
 
-## 2. Study A — CIC-IDS2017 feature selection
+## 2. Study A — CIC-IoT2023 feature selection
 
 ### 2.1 Dataset identity and audit gate
 
-The dataset is CIC-IDS2017, but the exact source URL/provider, release/archive version, download date, checksums, input filenames, target column, actual label values, and label mapping have **not yet been verified**. They must be recorded in a run-specific `DatasetManifest` before analysis. Do not silently combine differently processed mirrors or file variants.
+**Dataset approval status: Approved.** The faculty/team has approved CIC-IoT2023 as the Workstream A dataset. The exact source package and acquisition path for the local files, release/archive version, download date, checksums, input filenames, target column, actual label values, and label mapping have **not yet been fully verified**. Complete these details in a run-specific `DatasetManifest` before analysis. Approval of the dataset choice does not constitute technical verification. Do not silently combine differently processed mirrors or file variants.
 
 The manifest must list every input file and its checksum; row counts; column names and types; target field and mapping from observed source labels to canonical labels; eligible feature columns in exact order; and excluded columns with reason. Candidate exclusion reasons include target/label fields, row identifiers, timestamps used only for grouping, duplicated columns, constants, and fields judged to leak labels or identify capture scenarios. These are audit categories, not assertions that any particular named field exists.
 
@@ -128,7 +128,8 @@ The CIC-IoT2023 development results are summarized in the execution update at th
 
 ## 5. Decisions made
 
-* The project has two independent studies and must label real CIC-IDS2017 classification separately from simulated network metrics.
+* The project has two independent studies and must label CIC-IoT2023 classification separately from simulated network metrics.
+* CIC-IoT2023 dataset selection for Workstream A is approved by the faculty/team; local source, schema, labels, and run-manifest verification remain outstanding.
 * Study A uses GA, binary PSO, ACO, and a full-feature baseline with a common Random Forest evaluator.
 * Study A's primary score is macro-F1; supporting scores include accuracy, macro precision/recall/F1, weighted precision/recall/F1, and confusion matrix.
 * Initial Study A fitness weights are 0.8 validation macro-F1 loss and 0.2 selected-feature fraction; lower is better and weights remain configurable.
@@ -149,12 +150,12 @@ The CIC-IoT2023 development results are summarized in the execution update at th
 
 ### Dataset and Study A
 
-1. Exact CIC-IDS2017 source/provider, release/version, archive/file names, retrieval date, checksums, and actual schema.
+1. Exact CIC-IoT2023 source/provider, release/version, archive/file names, retrieval date, checksums, and actual schema.
 2. Verified target column and observed label mapping/canonical class names.
-3. CIC-IDS2017 eligible/excluded columns and exact duplicate policy remain unresolved. For the requested CIC-IoT2023 sample, retain all rows, report sample-scoped duplicates, and group identical eligible feature vectors together at split time; the global raw duplicate count is unavailable.
-4. CIC-IDS2017 capture/time metadata remain unverified. For the CIC-IoT2023 sample, identical eligible feature vectors are group-disjoint across splits; capture/session independence is not established.
-5. CIC-IDS2017 RF settings remain unselected. The CIC-IoT2023 development run uses the frozen config in `backend/config/cic-iot2023-final-experiment.json`.
-6. CIC-IDS2017 selector settings remain unselected. The CIC-IoT2023 development run uses equal 12-fit budgets and three seeds as recorded in that config.
+3. CIC-IoT2023 eligible/excluded columns and exact duplicate policy remain unresolved for a source-verified final dataset. For the development sample, retain all rows, report sample-scoped duplicates, and group identical eligible feature vectors together at split time; the global raw duplicate count is unavailable.
+4. CIC-IoT2023 capture/time metadata remain unverified. In the development sample, identical eligible feature vectors are group-disjoint across splits; capture/session independence is not established.
+5. The protocol's initially proposed RF settings remain provisional. The CIC-IoT2023 development run uses the frozen config in `backend/config/cic-iot2023-final-experiment.json`.
+6. The protocol's selector settings remain provisional. The CIC-IoT2023 development run uses equal 12-fit budgets and three seeds as recorded in that config.
 
 ### Simulation and Study B
 
@@ -169,17 +170,16 @@ The CIC-IoT2023 development results are summarized in the execution update at th
 12. Exact installed Python/package versions and artifact format/versioning. The initial skeleton declares bounded Python dependencies in `backend/pyproject.toml`; platform support beyond the documented local Windows setup remains to be verified.
 13. Confidence-interval and statistical-test procedures selected after the final experimental unit and sample size are established.
 
-Items 1–6 still block a defensible CIC-IDS2017 run. A requested CIC-IoT2023 development-sample
-experiment has since been completed; see the Workstream A update below. It does not establish
-results for CIC-IDS2017 or production/load-balancing conditions. Items 7–10 still block final
-Study B experiments.
+Dataset selection approval is complete, but the technical source, schema, label, and run-manifest
+checks above remain open. The CIC-IoT2023 development-sample experiment has been completed; see
+the Workstream A update below. Its classification results do not establish load-balancing
+performance. Items 7–10 still block final Study B experiments.
 
 ## 7. Workstream A execution update — 2026-11-27
 
-The user explicitly requested a CIC-IoT2023 development sample and experiment. This authorizes
-that local development work; it does not independently verify source provenance or faculty
-approval, and it does not establish that CIC-IoT2023 replaces CIC-IDS2017 as the team's final
-dataset.
+The user explicitly requested a CIC-IoT2023 development sample and experiment. The faculty/team
+has since approved CIC-IoT2023 as the Workstream A dataset. That selection approval does not
+independently verify local-file provenance, schema, labels, or the run manifest.
 
 The subsequent provenance review is documented in
 `docs/audits/cic_iot2023_provenance_and_ground_truth.md`. It verifies the official CIC source

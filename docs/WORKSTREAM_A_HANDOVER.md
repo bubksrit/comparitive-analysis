@@ -7,13 +7,17 @@
 
 ## Scope and research objective
 
-Workstream A implements a reproducible feature-selection and classifier comparison pipeline. The requested project question concerns machine-learning and traditional load-balancing approaches under dynamic traffic. Aditi's completed empirical work here evaluates Genetic Algorithm (GA), Binary Particle Swarm Optimization (BPSO), and Ant Colony Optimization (ACO) feature selection with a shared Random Forest (RF) evaluator on a CICIoT2023 development sample.
+Workstream A implements a reproducible feature-selection and classifier comparison pipeline. The requested project question concerns machine-learning and traditional load-balancing approaches under dynamic traffic. Aditi's completed empirical work here evaluates Genetic Algorithm (GA), Binary Particle Swarm Optimization (BPSO), and Ant Colony Optimization (ACO) feature selection with a shared Random Forest (RF) evaluator on a CIC-IoT2023 development sample.
 
 **These are preliminary intrusion-classification results. They do not measure actual or simulated load-balancer performance.** They contain no server assignment, latency, throughput, CPU load, or dynamic traffic response evaluation. Priyal's simulation/frontend work is outside this handover; this package does not claim the whole team project is complete.
 
+## Dataset approval
+
+The faculty/team has approved CIC-IoT2023 as the dataset for Workstream A. This approval records the dataset-selection decision only; it does not verify the provenance of the local files, their schema, or their folder-derived labels. The approver's name, approval date, meeting details, and supporting evidence were not provided and are not recorded. See the [dataset approval record](audits/CIC-IoT2023_DATASET_AUDIT.md) and the [provenance and ground-truth audit](audits/cic_iot2023_provenance_and_ground_truth.md).
+
 ## Completed implementation
 
-- CICIoT2023 config, recursive CSV loading, local schema checks, dataset audit, checksums, deterministic per-folder sampling, and sample manifest.
+- CIC-IoT2023 config, recursive CSV loading, local schema checks, dataset audit, checksums, deterministic per-folder sampling, and sample manifest.
 - Train/validation/test splitting with train-fitted preprocessing, held-out test evaluation, and grouping identical eligible feature vectors across partitions.
 - Shared RF evaluator; GA, BPSO, and ACO selectors using a common objective and capped validation-fit budgets.
 - Unified runner, JSON/CSV summaries, per-run artifacts, metrics, confidence intervals, and comparison/feature/timing/confusion-matrix graphs.
@@ -45,6 +49,7 @@ All repository paths below are relative to the repository root. Raw data and gen
 - Detailed research report: `docs/WORKSTREAM_A_RESEARCH.md`
 - Experiment protocol/history: `docs/EXPERIMENTS.md`
 - This handover: `docs/WORKSTREAM_A_HANDOVER.md`
+- Dataset approval record: `docs/audits/CIC-IoT2023_DATASET_AUDIT.md`
 - Provenance and ground-truth audit: `docs/audits/cic_iot2023_provenance_and_ground_truth.md`
 - Local structural audit: `docs/audits/cic_iot2023_audit.md` and `docs/audits/cic_iot2023_audit.json`
 - Current global duplicate status: `docs/audits/cic_iot2023_duplicate_audit_status.md`
@@ -130,11 +135,10 @@ These results were recorded before the final read-only handover review; they wer
 5. **Reproducibility:** Saved experiment artifacts contain software versions, hardware, configs, and sample checksum, but `code_revision` is null; configured retrieval date is also null. Record these in future reruns.
 6. **Interpretation:** Results use one class-capped sample, one split, three optimizer seeds, and small search budgets. They are not load-balancer performance evidence or a broad equivalence finding.
 
-### Faculty/team confirmation needed
+### Remaining faculty/team decisions
 
-- Confirm CICIoT2023 as an acceptable Workstream A dataset given the original CIC-IDS2017 specification and unresolved local provenance/schema conflict.
 - Confirm whether folder-derived labels and the `Benign_Final` mapping are acceptable for preliminary work, or whether independently verified labels are required before final claims.
 - Confirm that this intrusion-classification analysis is separate from Priyal's simulation-based load-balancing evaluation and agree how the two workstreams will be integrated in the final report.
 - Confirm whether a new source-verified dataset run is needed before submission.
 
-No faculty approval is asserted here. This is Aditi's Workstream A handover only; it does not claim the full team project is complete.
+This is Aditi's Workstream A handover only; it does not claim the full team project is complete.

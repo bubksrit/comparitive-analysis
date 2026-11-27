@@ -9,7 +9,9 @@ The official CICIoT2023 dataset and its intended use for IoT intrusion classific
 
 However, **the identity of these exact local files as an unmodified official CIC download is not verified**. The local source package's own `README_CSV.pdf` conflicts with the data actually audited: it describes combined/shuffled CSV data with a `label` feature, while the local files were audited as separate per-category files with 39 feature columns and no label column. The 34 folder labels are therefore locally derived proxies, not independently checked row-level ground truth. In particular, the mapping `Benign_Final` → `Benign` is semantically plausible but not established by the official source materials found in this audit.
 
-Treat existing model results as **preliminary exploratory intrusion-classification results on a locally folder-labelled, class-capped sample**. Do not present them as verified-label benchmark results, official-source replication, load-balancing performance, or faculty-approved dataset results.
+Treat existing model results as **preliminary exploratory intrusion-classification results on a locally folder-labelled, class-capped sample**. Do not present them as verified-label benchmark results, official-source replication, load-balancing performance, or faculty-validated results. Faculty/team approval confirms the dataset choice only; it does not approve these results or verify the local files' provenance, schema, or labels.
+
+**Dataset approval status:** Approved by the faculty/team for Workstream A. No approver name, approval date, meeting details, or supporting evidence were supplied. This approval does not change the technical findings below.
 
 ## 1. Verified source identity and publication
 
@@ -57,7 +59,8 @@ It is not direct evidence about dynamic server load balancing: it does not measu
 | Verified from local code | Target values are synthesized from immediate parent folder names; any folder containing “benign” maps to `Benign`; no independent target file is consulted. |
 | Verified mismatch | Local `README_CSV.pdf` describes shuffled/combined data with a `label` feature; local audit/code describe separate folder files with no raw label column. |
 | Reasonable but unverified assumption | The folder taxonomy reflects the intended scenario labels and `Benign_Final` means benign traffic. |
-| Unverified | Exact local package provenance, official release/version identity, source-side checksum match, file-level ground truth, `Benign_Final`'s official status, and faculty/team approval. |
+| Approved | Faculty/team approval of CIC-IoT2023 as the Workstream A dataset. No approver/date/evidence details were supplied. |
+| Unverified | Exact local package provenance, official release/version identity, source-side checksum match, file-level ground truth, and `Benign_Final`'s official status. |
 | Limitation | Local hashes show that the audited bytes can be identified again; they do not authenticate publisher origin. Sample balancing, unknown capture/session independence, and the folder-derived targets constrain inference. |
 
 ## Sources
