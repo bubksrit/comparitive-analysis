@@ -612,14 +612,17 @@ def audit_dataset(
                     "WHERE fingerprint=? ORDER BY rep_id",
                     (fingerprint,),
                 )
-                for rep_id, rep_file_id, rep_offset in representatives:
-                    rep_payload = _canonical_payload(
-                        source_reader.read(rep_file_id, rep_offset)
-                    )
-                    comparisons += 1
-                    if current_payload == rep_payload:
-                        match_rep_id = rep_id
-                        break
+                try:
+                    for rep_id, rep_file_id, rep_offset in representatives:
+                        rep_payload = _canonical_payload(
+                            source_reader.read(rep_file_id, rep_offset)
+                        )
+                        comparisons += 1
+                        if current_payload == rep_payload:
+                            match_rep_id = rep_id
+                            break
+                finally:
+                    representatives.close()
                 if match_rep_id is None:
                     match_rep_id = next_rep_id
                     next_rep_id += 1
